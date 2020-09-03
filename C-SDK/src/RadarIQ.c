@@ -1,25 +1,79 @@
-/*
- * RadarIQ.c
+/**
+ * @file
+ * RadarIQ C module
  *
- *  Created on: Aug 26, 2020
- *      Author: Nathan
  */
+
+//===============================================================================================//
+// INCLUDES
+//===============================================================================================//
 
 #include "RadarIQ.h"
 #include <assert.h>
 
+//===============================================================================================//
+// DATA TYPES
+//===============================================================================================//
+
 struct radariq_t
 {
-	uint8_t * rxBuffer;
+	radariqCaptureMode_t captureMode;
+	radariqResetCode_t resetCode;
+	radariqPointDensity_t pointDensity;
+
+	radariqData_t data;
+	radariqStatistics_t stats;
+
+	void(*sendSerialDataCallback)(uint8_t * const, const uint16_t);
+	void(*logCallback)(char * const);
 };
 
-radariqHandle_t RadarIQ_init()
+//===============================================================================================//
+// CONSTANTS
+//===============================================================================================//
+
+//===============================================================================================//
+// FILE-SCOPE VARIABLES
+//===============================================================================================//
+
+//===============================================================================================//
+// FILE-SCOPE FUNCTION PROTOTYPES
+//===============================================================================================//
+
+//===============================================================================================//
+// GLOBAL-SCOPE FUNCTIONS
+//===============================================================================================//
+
+radariqHandle_t RadarIQ_init(void(*sendSerialDataCallback)(uint8_t * const, const uint16_t), void(*logCallback)(char * const))
 {
+	assert(NULL != sendSerialDataCallback);
+	assert(NULL != logCallback);
+
 	radariqHandle_t handle = malloc(sizeof(radariq_t));
 	assert(NULL != handle);
 
-	handle->rxBuffer = malloc(RADARIQ_RX_BUFFER_SIZE);
-	assert(NULL != handle->rxBuffer);
+	handle->sendSerialDataCallback = sendSerialDataCallback;
+	handle->logCallback = logCallback;
 
 	return handle;
 }
+
+radariqData_t RadarIQ_getData(const radariqHandle_t obj)
+{
+	assert(NULL != obj);
+
+	return obj->data;
+}
+
+uint32_t RadarIQ_getMemoryUsage(const radariqHandle_t obj)
+{
+	assert(NULL != obj);
+
+	return sizeof(*obj);
+}
+
+//===============================================================================================//
+// FILE-SCOPE FUNCTIONS
+//===============================================================================================//
+
+
