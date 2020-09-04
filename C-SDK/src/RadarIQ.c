@@ -9,10 +9,20 @@
 //===============================================================================================//
 
 #include "RadarIQ.h"
-#include <assert.h>
 
 //===============================================================================================//
 // DATA TYPES
+//===============================================================================================//
+
+typedef enum
+{
+	PARSING_STATE_WAITING_FOR_HEADER,
+	PARSING_STATE_WAITING_FOR_FOOTER,
+	PARSING_STATE_READING_PACKET,
+} radariqParsingState_t;
+
+//===============================================================================================//
+// OBJECTS
 //===============================================================================================//
 
 struct radariq_t
@@ -24,13 +34,18 @@ struct radariq_t
 	radariqData_t data;
 	radariqStatistics_t stats;
 
+	uint8_t rxBuffer[RADARIQ_RX_BUFFER_SIZE];
+	radariqParsingState_t parsingState;
+
 	void(*sendSerialDataCallback)(uint8_t * const, const uint16_t);
+	uint8_t(*readSerialDataCallback)(void);
 	void(*logCallback)(char * const);
 };
 
 //===============================================================================================//
 // CONSTANTS
 //===============================================================================================//
+
 
 //===============================================================================================//
 // FILE-SCOPE VARIABLES
@@ -44,32 +59,71 @@ struct radariq_t
 // GLOBAL-SCOPE FUNCTIONS
 //===============================================================================================//
 
-radariqHandle_t RadarIQ_init(void(*sendSerialDataCallback)(uint8_t * const, const uint16_t), void(*logCallback)(char * const))
+radariqHandle_t RadarIQ_init(void(*sendSerialDataCallback)(uint8_t * const, const uint16_t),
+		uint8_t(*readSerialDataCallback)(void),
+		void(*logCallback)(char * const))
 {
-	assert(NULL != sendSerialDataCallback);
-	assert(NULL != logCallback);
+	radariq_assert(NULL != sendSerialDataCallback);
+	radariq_assert(NULL != readSerialDataCallback);
+	radariq_assert(NULL != logCallback);
 
 	radariqHandle_t handle = malloc(sizeof(radariq_t));
-	assert(NULL != handle);
+	radariq_assert(NULL != handle);
 
 	handle->sendSerialDataCallback = sendSerialDataCallback;
+	handle->readSerialDataCallback = readSerialDataCallback;
 	handle->logCallback = logCallback;
+
+	handle->captureMode = RADARIQ_MODE_POINT_CLOUD;
+	handle->parsingState = PARSING_STATE_WAITING_FOR_HEADER;
 
 	return handle;
 }
 
-radariqData_t RadarIQ_getData(const radariqHandle_t obj)
+bool RadarIQ_readSerial(const radariqHandle_t obj)
 {
-	assert(NULL != obj);
+	radariq_assert(NULL != obj);
 
-	return obj->data;
+	bool isDataReady = false;
+
+	uint8_t rxByte = obj->readSerialDataCallback();
+
+	switch(obj->parsingState)
+	{
+	case PARSING_STATE_WAITING_FOR_HEADER:
+	{
+		if ()
+
+		break;
+	}
+	case PARSING_STATE_WAITING_FOR_FOOTER:
+	{
+		break;
+	}
+	case PARSING_STATE_READING_PACKET:
+	{
+		break;
+	}
+	default:
+	}
+
+
+	return isDataReady;
 }
 
-uint32_t RadarIQ_getMemoryUsage(const radariqHandle_t obj)
+ radariqReturnVal_t RadarIQ_getData(const radariqHandle_t obj, radariqData_t * const dest)
 {
-	assert(NULL != obj);
+	radariq_assert(NULL != obj);
+	radariq_assert(NULL != dest);
 
-	return sizeof(*obj);
+	*dest = obj->data;
+
+	return RADARIQ_RETURN_VAL_OK;
+}
+
+uint32_t RadarIQ_getMemoryUsage()
+{
+	return sizeof(radariq_t);
 }
 
 //===============================================================================================//
