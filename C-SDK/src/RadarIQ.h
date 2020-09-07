@@ -7,6 +7,10 @@
 #ifndef SRC_RADARIQ_H_
 #define SRC_RADARIQ_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 //===============================================================================================//
 // INCLUDES
 //===============================================================================================//
@@ -21,9 +25,9 @@
 // GENERAL-PURPOSE MACROS
 //===============================================================================================//
 
-#define RADARIQ_RX_BUFFER_SIZE 		256u
-#define RADARIQ_MAX_POINTCLOUD		64u
-#define RADARIQ_MAX_OBJECTS			16u
+#define RADARIQ_PACKET_BUFFER_SIZE 		256u
+#define RADARIQ_MAX_POINTCLOUD			64u
+#define RADARIQ_MAX_OBJECTS				16u
 
 #define radariq_assert(expr) assert(expr)
 
@@ -36,32 +40,32 @@ typedef enum
 	RADARIQ_RETURN_VAL_OK = 0,
 	RADARIQ_RETURN_VAL_WARNING = 1,
 	RADARIQ_RETURN_VAL_ERR = 2
-} radariqReturnVal_t;
+} RadarIQReturnVal_t;
 
 typedef enum
 {
 	RADARIQ_MODE_POINT_CLOUD = 0,
 	RADARIQ_MODE_OBJECT_TRACKING = 1
-}radariqCaptureMode_t;
+}RadarIQCaptureMode_t;
 
 typedef enum
 {
 	RADARIQ_MOVING_BOTH = 0,
 	RADARIQ_MOVING_OBJECTS_ONLY = 1
-}radariqMovingObjectMode_t;
+}RadarIQMovingObjectMode_t;
 
 typedef enum
 {
 	RADARIQ_RESET_REBOOT = 0,
 	RADARIQ_FACTORY_SETTINGS = 1
-}radariqResetCode_t;
+}RadarIQResetCode_t;
 
 typedef enum
 {
 	RADARIQ_DENSITY_NORMAL = 0,
 	RADARIQ_DENSITY_DENSE = 1,
 	RADARIQ_DENSITY_VERY_DENSE = 2
-}radariqPointDensity_t;
+}RadarIQPointDensity_t;
 
 typedef struct
 {
@@ -69,13 +73,13 @@ typedef struct
 	int16_t y;
 	int16_t z;
 	uint8_t intensity;
-} radariqDataPoint_t;
+} RadarIQDataPoint_t;
 
 typedef struct
 {
 	uint16_t numPoints;
-	radariqDataPoint_t points[RADARIQ_MAX_POINTCLOUD];
-} radariqDataPointCloud_t;
+	RadarIQDataPoint_t points[RADARIQ_MAX_POINTCLOUD];
+} RadarIQDataPointCloud_t;
 
 typedef struct
 {
@@ -89,19 +93,19 @@ typedef struct
 	int16_t xAcc;
 	int16_t yAcc;
 	int16_t zAcc;
-} radariqDataObject_t;
+} RadarIQDataObject_t;
 
 typedef struct
 {
 	uint8_t numObjects;
-	radariqDataObject_t objects[RADARIQ_MAX_OBJECTS];
-} radariqDataObjectTracking_t;
+	RadarIQDataObject_t objects[RADARIQ_MAX_OBJECTS];
+} RadarIQDataObjectTracking_t;
 
 typedef union
 {
-	radariqDataPointCloud_t pointCloud;
-	radariqDataObjectTracking_t objectTracking;
-} radariqData_t;
+	RadarIQDataPointCloud_t pointCloud;
+	RadarIQDataObjectTracking_t objectTracking;
+} RadarIQData_t;
 
 typedef struct
 {
@@ -115,7 +119,7 @@ typedef struct
 	int16_t tx0;
 	int16_t tx1;
 	int16_t tx2;
-} radariqChipTemperatures_t;
+} RadarIQChipTemperatures_t;
 
 typedef struct
 {
@@ -125,7 +129,7 @@ typedef struct
 	uint32_t transmitOutputTime;
 	uint32_t interFrameProcMargin;
 	uint32_t interChirpProcMargin;
-} radariqTIStats_t;
+} RadarIQTIStats_t;
 
 typedef struct
 {
@@ -137,32 +141,41 @@ typedef struct
 	uint32_t numPointsTransmitted;
 	bool inputPointsTruncated;
 	bool outputPointsTruncated;
-} radariqPointcloudStats_t;
+} RadarIQPointcloudStats_t;
 
 typedef struct
 {
-	radariqTIStats_t processing;
-	radariqPointcloudStats_t pointcloud;
-	radariqChipTemperatures_t temperature;
-} radariqStatistics_t;
+	RadarIQTIStats_t processing;
+	RadarIQPointcloudStats_t pointcloud;
+	RadarIQChipTemperatures_t temperature;
+} RadarIQStatistics_t;
 
 
 //===============================================================================================//
 // OBJECTS
 //===============================================================================================//
 
-typedef struct radariq_t radariq_t;
-typedef radariq_t* radariqHandle_t;
+typedef struct RadarIQ_t RadarIQ_t;
+typedef RadarIQ_t* RadarIQHandle_t;
 
 //===============================================================================================//
 // FUNCTIONS
 //===============================================================================================//
 
-radariqHandle_t RadarIQ_init(void(*sendSerialDataCallback)(uint8_t * const, const uint16_t),
+RadarIQHandle_t RadarIQ_init(void(*sendSerialDataCallback)(uint8_t * const, const uint16_t),
 		uint8_t(*readSerialDataCallback)(void),
 		void(*logCallback)(char * const));
-bool RadarIQ_readSerial(const radariqHandle_t obj);
-radariqReturnVal_t RadarIQ_getData(const radariqHandle_t obj, radariqData_t * const dest);
+bool RadarIQ_readSerial(const RadarIQHandle_t obj);
+RadarIQReturnVal_t RadarIQ_getData(const RadarIQHandle_t obj, RadarIQData_t * const dest);
 uint32_t RadarIQ_getMemoryUsage();
+
+RadarIQReturnVal_t RadarIQ_getVersion(const RadarIQHandle_t obj);
+RadarIQReturnVal_t RadarIQ_getRadarVersions(const RadarIQHandle_t obj);
+RadarIQReturnVal_t RadarIQ_getSerialNumber(const RadarIQHandle_t obj);
+RadarIQReturnVal_t RadarIQ_start(const RadarIQHandle_t obj, const uint8_t numFrames);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* SRC_RADARIQ_H_ */
