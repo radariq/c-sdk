@@ -20,6 +20,7 @@ extern "C" {
 #include <stdbool.h>
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 
 //===============================================================================================//
 // GENERAL-PURPOSE MACROS
@@ -173,6 +174,7 @@ RadarIQReturnVal_t RadarIQ_getVersion(const RadarIQHandle_t obj);
 RadarIQReturnVal_t RadarIQ_getRadarVersions(const RadarIQHandle_t obj);
 RadarIQReturnVal_t RadarIQ_getSerialNumber(const RadarIQHandle_t obj);
 RadarIQReturnVal_t RadarIQ_start(const RadarIQHandle_t obj, const uint8_t numFrames);
+uint8_t RadarIQ_getDataBuffer(const RadarIQHandle_t obj, uint8_t* dest);
 
 #ifdef __cplusplus
 }

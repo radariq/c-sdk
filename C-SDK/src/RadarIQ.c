@@ -142,8 +142,6 @@ RadarIQHandle_t RadarIQ_init(void(*sendSerialDataCallback)(uint8_t * const, cons
 	handle->txBuffer.len = 0u;
 	handle->dataBuffer.len = 0u;
 
-	printf("%lu\n", sizeof(handle->data));
-
 	return handle;
 }
 
@@ -153,6 +151,7 @@ bool RadarIQ_readSerial(const RadarIQHandle_t obj)
 
 	bool isDataReady = false;
 	uint8_t rxByte = obj->readSerialDataCallback();
+	static uint16_t idx;
 
 	switch(obj->parsingState)
 	{
@@ -160,6 +159,9 @@ bool RadarIQ_readSerial(const RadarIQHandle_t obj)
 	{
 		if (RADARIQ_PACKET_HEAD == rxByte)
 		{
+			obj->rxBuffer.data[0] = rxByte;
+			idx = 1u;
+
 			obj->parsingState = PARSING_STATE_WAITING_FOR_FOOTER;
 		}
 
@@ -167,6 +169,20 @@ bool RadarIQ_readSerial(const RadarIQHandle_t obj)
 	}
 	case PARSING_STATE_WAITING_FOR_FOOTER:
 	{
+		obj->rxBuffer.data[idx] = rxByte;
+		idx = (idx + 1) % RADARIQ_PACKET_BUFFER_SIZE;
+		obj->rxBuffer.len = idx;
+
+		if (RADARIQ_PACKET_FOOT == rxByte)
+		{
+			obj->parsingState = PARSING_STATE_WAITING_FOR_HEADER;
+
+			idx = 0;
+
+			RadarIQPacketReturn_t ret = RadarIQ_decodePacket(obj);
+			if (ret.status == RADARIQ_PACKET_OK) isDataReady = true;
+		}
+
 		break;
 	}
 	case PARSING_STATE_READING_PACKET:
@@ -215,6 +231,15 @@ RadarIQReturnVal_t RadarIQ_start(const RadarIQHandle_t obj, const uint8_t numFra
 	{
 		return RADARIQ_RETURN_VAL_ERR;
 	}
+}
+
+uint8_t RadarIQ_getDataBuffer(const RadarIQHandle_t obj, uint8_t* dest)
+{
+	radariq_assert(NULL != obj);
+
+	memcpy(dest, obj->rxBuffer.data, obj->rxBuffer.len);
+
+	return obj->dataBuffer.len;
 }
 
 //===============================================================================================//
@@ -306,6 +331,7 @@ RadarIQPacketReturn_t RadarIQ_decodePacket(const RadarIQHandle_t obj)
 	{
 		retval.status = RADARIQ_PACKET_OK;
 		retval.len = destIdx - 2u;
+		obj->dataBuffer.len = destIdx - 2u;
 	}
 
 	return retval;

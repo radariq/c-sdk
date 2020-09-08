@@ -49,14 +49,28 @@ int main()
 	RadarIQHandle_t myRadar = RadarIQ_init(callbackSendRadarData, callbackReadSerialData, callbackRadarLog);
 	printf("* Created RadarIQ instance, using %u bytes of memory\n", RadarIQ_getMemoryUsage());
 
-	RadarIQ_start(myRadar, 5);
+	RadarIQ_start(myRadar, 0);
 
-	while(1)
+	bool dataReady = false;
+
+
+	while(!dataReady)
 	{
-		RadarIQ_readSerial(myRadar);
+		dataReady = RadarIQ_readSerial(myRadar);
+	}
+	CloseHandle(port);
+
+	printf("got data\n");
+
+	uint8_t buffer[RADARIQ_PACKET_BUFFER_SIZE];
+	uint8_t len = RadarIQ_getDataBuffer(myRadar, buffer);
+
+	for (uint32_t i = 0u; i < len; i++)
+	{
+		printf("%.2x ", buffer[i]);
 	}
 
-	CloseHandle(port);
+
 
 	return 0;
 }
@@ -68,12 +82,13 @@ int main()
 static void callbackSendRadarData(uint8_t * const buffer, const uint16_t len)
 {
 	// Debug
+	/*
 	for (uint16_t i = 0u; i < len; i++)
 	{
 		printf("%.2x ", buffer[i]);
 	}
 	printf("\n");
-
+*/
 	write_port(port, buffer, len);
 }
 
@@ -81,9 +96,20 @@ static uint8_t callbackReadSerialData()
 {
 	uint8_t rxByte = 0u;
 
-	SSIZE_T bytesRead = read_port(port, &rxByte, 1u);
+	DWORD dwEventMask;
 
-	printf("len = %u, %.2x\n", bytesRead, rxByte);
+	SSIZE_T bytesRead = 0u;
+
+
+	//while (bytesRead == 0u)
+	//{
+		bytesRead = read_port(port, &rxByte, 1u);
+	//}
+
+
+
+
+	//printf("len = %u, %.2x\n", bytesRead, rxByte);
 
 	return rxByte;
 }
@@ -103,7 +129,7 @@ HANDLE open_serial_port(const char * device, uint32_t baud_rate)
     OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
   if (port == INVALID_HANDLE_VALUE)
   {
-    printf(device);
+    printf("Failed to open port\n");
     return INVALID_HANDLE_VALUE;
   }
 
@@ -118,11 +144,11 @@ HANDLE open_serial_port(const char * device, uint32_t baud_rate)
 
   // Configure read and write operations to time out after 1s.
   COMMTIMEOUTS timeouts = { 0 };
-  timeouts.ReadIntervalTimeout = 0;
-  timeouts.ReadTotalTimeoutConstant = 1000;
-  timeouts.ReadTotalTimeoutMultiplier = 0;
-  timeouts.WriteTotalTimeoutConstant = 1000;
-  timeouts.WriteTotalTimeoutMultiplier = 0;
+  timeouts.ReadIntervalTimeout = 50;
+  timeouts.ReadTotalTimeoutConstant = 50;
+  timeouts.ReadTotalTimeoutMultiplier = 10;
+  timeouts.WriteTotalTimeoutConstant = 50;
+  timeouts.WriteTotalTimeoutMultiplier = 10;
 
   success = SetCommTimeouts(port, &timeouts);
   if (!success)
@@ -148,6 +174,14 @@ HANDLE open_serial_port(const char * device, uint32_t baud_rate)
   if (!success)
   {
     printf("Failed to set serial settings\n");
+    CloseHandle(port);
+    return INVALID_HANDLE_VALUE;
+  }
+
+  success = SetCommMask(port, EV_RXCHAR);
+  if (!success)
+  {
+    printf("Failed to set comm mask\n");
     CloseHandle(port);
     return INVALID_HANDLE_VALUE;
   }
