@@ -51,18 +51,17 @@ int main()
 
 	RadarIQ_start(myRadar, 0);
 
-	bool dataReady = false;
-
-
-	while(!dataReady)
+	while (1)
 	{
-		dataReady = RadarIQ_readSerial(myRadar);
+		RadarIQCommand_t packet = RadarIQ_readSerial(myRadar);
+
+		if (packet > RADARIQ_CMD_NONE) break;
 	}
 	CloseHandle(port);
 
 	printf("got data\n");
 
-	uint8_t buffer[RADARIQ_PACKET_BUFFER_SIZE];
+	uint8_t buffer[RADARIQ_RX_BUFFER_SIZE];
 	uint8_t len = RadarIQ_getDataBuffer(myRadar, buffer);
 
 	for (uint32_t i = 0u; i < len; i++)

@@ -26,7 +26,8 @@ extern "C" {
 // GENERAL-PURPOSE MACROS
 //===============================================================================================//
 
-#define RADARIQ_PACKET_BUFFER_SIZE 		256u
+#define RADARIQ_TX_BUFFER_SIZE			32u
+#define RADARIQ_RX_BUFFER_SIZE 			256u
 #define RADARIQ_MAX_POINTCLOUD			64u
 #define RADARIQ_MAX_OBJECTS				16u
 
@@ -35,6 +36,30 @@ extern "C" {
 //===============================================================================================//
 // DATA TYPES
 //===============================================================================================//
+
+typedef enum
+{
+    RADARIQ_CMD_ERROR			 = -2,
+    RADARIQ_CMD_NONE			 = -1,											//TODO: rename type to "packet" or something more fitting?
+    RADARIQ_CMD_MESSAGE          = 0x00,
+    RADARIQ_CMD_VERSION          = 0x01,
+    RADARIQ_CMD_SERIAL           = 0x02,
+    RADARIQ_CMD_RESET            = 0x03,
+    RADARIQ_CMD_FRAME_RATE       = 0x04,
+    RADARIQ_CMD_MODE             = 0x05,
+    RADARIQ_CMD_DIST_FILT        = 0x06,
+    RADARIQ_CMD_ANGLE_FILT       = 0x07,
+    RADARIQ_CMD_MOVING_FILT      = 0x08,
+    RADARIQ_CMD_SAVE             = 0x09,
+    RADARIQ_CMD_PNT_DENSITY      = 0x10,
+    RADARIQ_CMD_CERTAINTY        = 0x11,
+    RADARIQ_CMD_HEIGHT_FILT      = 0x12,
+    RADARIQ_CMD_RAW_DP_ENABLE    = 0x13,
+    RADARIQ_CMD_IWR_VERSION      = 0x14,
+    RADARIQ_CMD_CAPTURE_START    = 0x64,
+    RADARIQ_CMD_CAPTURE_STOP     = 0x65,
+    RADARIQ_CMD_PNT_CLOUD_FRAME  = 0x66
+} RadarIQCommand_t;
 
 typedef enum
 {
@@ -78,6 +103,7 @@ typedef struct
 
 typedef struct
 {
+	bool isFrameComplete;
 	uint16_t numPoints;
 	RadarIQDataPoint_t points[RADARIQ_MAX_POINTCLOUD];
 } RadarIQDataPointCloud_t;
@@ -166,14 +192,14 @@ typedef RadarIQ_t* RadarIQHandle_t;
 RadarIQHandle_t RadarIQ_init(void(*sendSerialDataCallback)(uint8_t * const, const uint16_t),
 		uint8_t(*readSerialDataCallback)(void),
 		void(*logCallback)(char * const));
-bool RadarIQ_readSerial(const RadarIQHandle_t obj);
+RadarIQCommand_t RadarIQ_readSerial(const RadarIQHandle_t obj);
 RadarIQReturnVal_t RadarIQ_getData(const RadarIQHandle_t obj, RadarIQData_t * const dest);
-uint32_t RadarIQ_getMemoryUsage();
+uint32_t RadarIQ_getMemoryUsage(void);
 
 RadarIQReturnVal_t RadarIQ_getVersion(const RadarIQHandle_t obj);
 RadarIQReturnVal_t RadarIQ_getRadarVersions(const RadarIQHandle_t obj);
 RadarIQReturnVal_t RadarIQ_getSerialNumber(const RadarIQHandle_t obj);
-RadarIQReturnVal_t RadarIQ_start(const RadarIQHandle_t obj, const uint8_t numFrames);
+void RadarIQ_start(const RadarIQHandle_t obj, const uint8_t numFrames);
 uint8_t RadarIQ_getDataBuffer(const RadarIQHandle_t obj, uint8_t* dest);
 
 #ifdef __cplusplus
