@@ -106,7 +106,7 @@ static RadarIQCommand_t RadarIQ_pollResponse(const RadarIQHandle_t obj);
 static bool RadarIQ_decodePacket(const RadarIQHandle_t obj);
 static RadarIQCommand_t RadarIQ_parsePacket(const RadarIQHandle_t obj);
 static uint16_t getCrc16Ccitt(uint8_t const * array, uint8_t len);
-static void encodeHelper(const RadarIQHandle_t obj, uint8_t const byte);	//TODO rename byte param as not compatable with Arduino
+static void encodeHelper(const RadarIQHandle_t obj, uint8_t const databyte);
 
 // Packet parsing
 static void RadarIQ_parsePointCloud(const RadarIQHandle_t obj);
@@ -1285,11 +1285,11 @@ static bool RadarIQ_decodePacket(const RadarIQHandle_t obj)
 	return (crc == rxCrc);
 }
 
-static void encodeHelper(const RadarIQHandle_t obj, uint8_t const byte)
+static void encodeHelper(const RadarIQHandle_t obj, uint8_t const databyte)
 {
 	radariq_assert(obj->txBuffer.len < (RADARIQ_TX_BUFFER_SIZE - 2u));
 
-	switch (byte)
+	switch (databyte)
 	{
 		case RADARIQ_PACKET_HEAD:
 		{
@@ -1323,7 +1323,7 @@ static void encodeHelper(const RadarIQHandle_t obj, uint8_t const byte)
 		}
 		default:
 		{
-			obj->txBuffer.data[obj->txBuffer.len] = byte;
+			obj->txBuffer.data[obj->txBuffer.len] = databyte;
 			obj->txBuffer.len++;
 		}
 	}
