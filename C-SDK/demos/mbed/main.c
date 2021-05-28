@@ -1,9 +1,14 @@
 //------------------------------------------------------------------------------
 //                                                                            --
-//                                RadarIQ                                     --                                         
-//                       C-SDK Demo Application 2021                          --
+//                                RadarIQ                                     --
+//                         C-SDK Demo Application                             --
 //                                                                            --
-//------------------------------------------------------------------------------
+//                   (C) 2021 RadarIQ <support@radariq.io>                    --
+//                                                                            --
+//                            License: MIT                                    --
+//                                                                            --
+//------------------------------------------------------------------------------ 
+
 
 //------------------------------------------------------------------------------
 // Includes
@@ -23,7 +28,7 @@ static RadarIQHandle_t myRadar;
 
 //------------------------------------------------------------------------------
 // Function Prototypes
-//---------------------
+//------------------------------------------------------------------------------
 
 static void callbackSendRadarData(uint8_t * const buffer, const uint16_t len);
 static RadarIQUartData_t callbackReadSerialData(void);
@@ -105,7 +110,7 @@ int main()
     }
     
     // Set distance filter
-    if (RadarIQ_setDistanceFilter(myRadar, 50u, 500u) == RADARIQ_RETURN_VAL_OK)
+    if (RadarIQ_setDistanceFilter(myRadar, 0u, 10000u) == RADARIQ_RETURN_VAL_OK)
     {
         uint16_t dMin, dMax;
         if (RadarIQ_getDistanceFilter(myRadar, &dMin, &dMax) == RADARIQ_RETURN_VAL_OK)
@@ -123,7 +128,7 @@ int main()
     }
     
     // Set angle filter
-    if (RadarIQ_setAngleFilter(myRadar, -45, 45) == RADARIQ_RETURN_VAL_OK)
+    if (RadarIQ_setAngleFilter(myRadar, -55, 55) == RADARIQ_RETURN_VAL_OK)
     { 
         int8_t angleMin, angleMax;
         if (RadarIQ_getAngleFilter(myRadar, &angleMin, &angleMax) == RADARIQ_RETURN_VAL_OK)
@@ -141,7 +146,7 @@ int main()
     }
     
     // Set height filter
-    if (RadarIQ_setHeightFilter(myRadar, -100, 100) == RADARIQ_RETURN_VAL_OK)
+    if (RadarIQ_setHeightFilter(myRadar, -1000, 1000) == RADARIQ_RETURN_VAL_OK)
     {
         int16_t heightMin, heightMax;
         if (RadarIQ_getHeightFilter(myRadar, &heightMin, &heightMax) == RADARIQ_RETURN_VAL_OK)
@@ -220,16 +225,16 @@ int main()
     // Program loop
     while(1)
     {   
-        // Check if  serial data is availible to read
+        // Check if  serial data is available to read
         if (radarUart.readable())
         {
             // Process the serial data
             RadarIQCommand_t packet = RadarIQ_readSerial(myRadar);
               
-            // Check recieved packet type
+            // Check received packet type
             switch (packet)
             {
-                // Pointcloud frame
+                // Point cloud frame
                 case RADARIQ_CMD_PNT_CLOUD_FRAME:
                 {
                     RadarIQData_t radarData;
@@ -276,7 +281,7 @@ int main()
                     
                     RadarIQ_getPointCloudStats(myRadar, &pointcloud);
                     
-                    printf("* Pointcloud: %u, %u, %u, %u, %u, %u, %u, %u\n\r", pointcloud.frameAggregatingTime,
+                    printf("* Point cloud: %u, %u, %u, %u, %u, %u, %u, %u\n\r", pointcloud.frameAggregatingTime,
                         pointcloud.intensitySortTime, pointcloud.nearestNeighboursTime,
                         pointcloud.uartTransmitTime, pointcloud.numFilteredPoints,
                         pointcloud.numPointsTransmitted, pointcloud.inputPointsTruncated,
