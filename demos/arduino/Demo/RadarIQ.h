@@ -32,7 +32,7 @@ extern "C" {
 #define RADARIQ_RX_BUFFER_SIZE 			256u
 
 // Data storage sizes
-#define RADARIQ_MAX_POINTCLOUD			64u
+#define RADARIQ_MAX_POINTCLOUD			5u
 #define RADARIQ_MAX_OBJECTS				16u
 
 // Limits
@@ -120,7 +120,7 @@ typedef enum
 	RADARIQ_DENSITY_VERY_DENSE = 2
 }RadarIQPointDensity_t;
 
-typedef struct
+typedef struct __attribute__((__packed__))
 {
 	int16_t x;
 	int16_t y;
@@ -256,7 +256,7 @@ uint32_t RadarIQ_getMemoryUsage(void);
 uint8_t RadarIQ_getDataBuffer(const RadarIQHandle_t obj, uint8_t* dest);
 
 // Data & stats getters
-void RadarIQ_getData(const RadarIQHandle_t obj, RadarIQData_t * const dest);
+void RadarIQ_getData(const RadarIQHandle_t obj, RadarIQData_t * dest);
 void RadarIQ_getProcessingStats(const RadarIQHandle_t obj, RadarIQProcessingStats_t * const dest);
 void RadarIQ_getPointCloudStats(const RadarIQHandle_t obj, RadarIQPointcloudStats_t * const dest);
 void RadarIQ_getChipTemperatures(const RadarIQHandle_t obj, RadarIQChipTemperatures_t * const dest);
