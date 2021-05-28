@@ -35,6 +35,9 @@ static void callbackRadarLog(char * const buffer);
 
 void setup()
 {
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, LOW);
+  
   Serial.begin(115200);   // PC debug serial port
   Serial1.begin(115200);  // RadarIQ device serial port
 
@@ -229,83 +232,80 @@ void setup()
   RadarIQ_start(myRadar, 10);
 }
 
+char buffer[512];
+
 void loop()
 {
-  char buffer[256];
+  // Process the serial data
+  RadarIQCommand_t packet = RadarIQ_readSerial(myRadar);
   
-  if (Serial1.available())
+  // Check recieved packet type
+  switch (packet)
   {
-    // Process the serial data
-    RadarIQCommand_t packet = RadarIQ_readSerial(myRadar);
-    
-    // Check recieved packet type
-    switch (packet)
+    // Pointcloud frame
+    case RADARIQ_CMD_PNT_CLOUD_FRAME:
     {
-      // Pointcloud frame
-      case RADARIQ_CMD_PNT_CLOUD_FRAME:
-      {
-        RadarIQData_t radarData;
-        RadarIQ_getData(myRadar, &radarData);
-        
-        sprintf(buffer, "\n\r** Data num points = %u\n\r", radarData.pointCloud.numPoints);
-        
-        for (uint32_t i = 0u; i < radarData.pointCloud.numPoints; i++)
-        {
-          sprintf(buffer, "*  %u: x = %i, y = %i, z = %i, i = %u, v = %i\n\r", i, 
-            radarData.pointCloud.points[i].x, radarData.pointCloud.points[i].y,
-            radarData.pointCloud.points[i].z, radarData.pointCloud.points[i].intensity,
-            radarData.pointCloud.points[i].velocity);
-          Serial.print(buffer);
-        }
-        
-        break;    
-      } 
+      RadarIQData_t radarData;
+      RadarIQ_getData(myRadar, &radarData);
       
-      // Processing statistics
-      case RADARIQ_CMD_PROC_STATS:
+      sprintf(buffer, "\n\r** Data num points = %u\n\r", radarData.pointCloud.numPoints);
+      
+      for (uint32_t i = 0u; i < radarData.pointCloud.numPoints; i++)
       {
-        RadarIQProcessingStats_t processing;
-        RadarIQChipTemperatures_t temperatures;
-        
-        RadarIQ_getProcessingStats(myRadar, &processing);
-        RadarIQ_getChipTemperatures(myRadar, &temperatures);
-        
-        sprintf(buffer, "* Processing: %u, %u, %u, %u, %u, %u, %u\n\r", processing.activeFrameCPULoad,
-          processing.interFrameCPULoad, processing.interFrameProcTime,
-          processing.transmitOutputTime, processing.interFrameProcMargin,
-          processing.interChirpProcMargin, processing.uartTransmitTime);
+        sprintf(buffer, "*  %u: x = %i, y = %i, z = %i, i = %u, v = %i\n\r", i, 
+          radarData.pointCloud.points[i].x, radarData.pointCloud.points[i].y,
+          radarData.pointCloud.points[i].z, radarData.pointCloud.points[i].intensity,
+          radarData.pointCloud.points[i].velocity);
         Serial.print(buffer);
-        
-        sprintf(buffer, "* Temperature: %i, %i, %i, %i, %i, %i, %i, %i, %i, %i\n\r", temperatures.sensor0,
-          temperatures.sensor1, temperatures.powerManagement, temperatures.rx0,
-          temperatures.rx1, temperatures.rx2, temperatures.rx3, temperatures.tx0,
-          temperatures.tx1, temperatures.tx2);
-        Serial.print(buffer);
-        
-        break;    
       }
       
-      case RADARIQ_CMD_POINTCLOUD_STATS:
-      {
-        RadarIQPointcloudStats_t pointcloud;
-        
-        RadarIQ_getPointCloudStats(myRadar, &pointcloud);
-        
-        sprintf(buffer, "* Pointcloud: %u, %u, %u, %u, %u, %u, %u, %u\n\r", pointcloud.frameAggregatingTime,
-          pointcloud.intensitySortTime, pointcloud.nearestNeighboursTime,
-          pointcloud.uartTransmitTime, pointcloud.numFilteredPoints,
-          pointcloud.numPointsTransmitted, pointcloud.inputPointsTruncated,
-          pointcloud.outputPointsTruncated);
-        Serial.print(buffer);      
-  
-        break;
-      }
+      break;    
+    } 
+    
+    // Processing statistics
+    case RADARIQ_CMD_PROC_STATS:
+    {
+      RadarIQProcessingStats_t processing;
+      RadarIQChipTemperatures_t temperatures;
       
-      default:
-      {
-      }    
+      RadarIQ_getProcessingStats(myRadar, &processing);
+      RadarIQ_getChipTemperatures(myRadar, &temperatures);
+      
+      sprintf(buffer, "* Processing: %u, %u, %u, %u, %u, %u, %u\n\r", processing.activeFrameCPULoad,
+        processing.interFrameCPULoad, processing.interFrameProcTime,
+        processing.transmitOutputTime, processing.interFrameProcMargin,
+        processing.interChirpProcMargin, processing.uartTransmitTime);
+      Serial.print(buffer);
+      
+      sprintf(buffer, "* Temperature: %i, %i, %i, %i, %i, %i, %i, %i, %i, %i\n\r", temperatures.sensor0,
+        temperatures.sensor1, temperatures.powerManagement, temperatures.rx0,
+        temperatures.rx1, temperatures.rx2, temperatures.rx3, temperatures.tx0,
+        temperatures.tx1, temperatures.tx2);
+      Serial.print(buffer);
+      
+      break;    
     }
-  } 
+    
+    case RADARIQ_CMD_POINTCLOUD_STATS:
+    {
+      RadarIQPointcloudStats_t pointcloud;
+      
+      RadarIQ_getPointCloudStats(myRadar, &pointcloud);
+      
+      sprintf(buffer, "* Pointcloud: %u, %u, %u, %u, %u, %u, %u, %u\n\r", pointcloud.frameAggregatingTime,
+        pointcloud.intensitySortTime, pointcloud.nearestNeighboursTime,
+        pointcloud.uartTransmitTime, pointcloud.numFilteredPoints,
+        pointcloud.numPointsTransmitted, pointcloud.inputPointsTruncated,
+        pointcloud.outputPointsTruncated);
+      Serial.print(buffer);      
+
+      break;
+    }
+    
+    default:
+    {
+    }    
+  }
 }
 
 //------------------------------------------------------------------------------
