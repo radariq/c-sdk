@@ -216,7 +216,7 @@ void RadarIQ_getData(const RadarIQHandle_t obj, RadarIQData_t * dest)
 	radariq_assert(NULL != obj);
 	radariq_assert(NULL != dest);
 
-  memcpy((void*)dest, (void*)&obj->data, sizeof(RadarIQData_t));
+	memcpy((void*)dest, (void*)&obj->data, sizeof(RadarIQData_t));
 }
 
 void RadarIQ_getStatistics(const RadarIQHandle_t obj, RadarIQProcessingStats_t * const processing, 
@@ -1071,21 +1071,21 @@ static RadarIQCommand_t RadarIQ_parsePointCloud(const RadarIQHandle_t obj)
 	uint8_t pointNum;
 	for (pointNum = 0u; pointNum < pointCount; pointNum++)
 	{
-        /*obj->data.pointCloud.points[obj->numDataPoints].x = bytePack16Signed(&obj->rxPacket.data[packetIdx]);
-		    packetIdx += 2u;
+        obj->data.pointCloud.points[obj->numDataPoints].x = bytePack16Signed(&obj->rxPacket.data[packetIdx]);
+		packetIdx += 2u;
         //sprintf(buff, "x = %i\n", obj->data.pointCloud.points[obj->numDataPoints].x);
         //obj->logCallback(buff);
-		    obj->data.pointCloud.points[obj->numDataPoints].y = bytePack16Signed(&obj->rxPacket.data[packetIdx]);
+		obj->data.pointCloud.points[obj->numDataPoints].y = bytePack16Signed(&obj->rxPacket.data[packetIdx]);
         packetIdx += 2u;
         obj->data.pointCloud.points[obj->numDataPoints].z = bytePack16Signed(&obj->rxPacket.data[packetIdx]);
         packetIdx += 2u;
         obj->data.pointCloud.points[obj->numDataPoints].intensity = obj->rxPacket.data[packetIdx];
         packetIdx++;
         obj->data.pointCloud.points[obj->numDataPoints].velocity = bytePack16Signed(&obj->rxPacket.data[packetIdx]);
-        packetIdx += 2u;*/
+        packetIdx += 2u;
 
-        memcpy((void*)&obj->data.pointCloud.points[obj->numDataPoints], &obj->rxPacket.data[packetIdx], 9);
-        packetIdx += 9u;
+        //memcpy((void*)&obj->data.pointCloud.points[obj->numDataPoints], &obj->rxPacket.data[packetIdx], 9);
+        //packetIdx += 9u;
 
 		obj->numDataPoints++;
 		obj->data.pointCloud.numPoints = obj->numDataPoints;
@@ -1107,7 +1107,7 @@ static RadarIQCommand_t RadarIQ_parsePointCloud(const RadarIQHandle_t obj)
 			obj->data.pointCloud.isFrameComplete = true;
 		}
 
-    ret = RADARIQ_CMD_PNT_CLOUD_FRAME;
+    	ret = RADARIQ_CMD_PNT_CLOUD_FRAME;
 	}
 
   return ret;
@@ -1442,3 +1442,5 @@ static int32_t bytePack32Signed(const uint8_t * const data)
 
     return returnValue;
 }
+
+/* [] END OF FILE */

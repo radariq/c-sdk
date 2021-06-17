@@ -37,6 +37,18 @@ void setup()
 {
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
+
+  noInterrupts();           // disable all interrupts
+
+  TCCR1A = 0;
+  TCCR1B = 0;
+  TCNT1  = 0;
+  OCR1A = 11000;            // compare match register 16MHz/256/2Hz
+  TCCR1B |= (1 << WGM12);   // CTC mode
+  TCCR1B |= (1 << CS12);
+  TCCR1B |= (1 << CS10);
+
+  interrupts();             // enable all interrupts
   
   Serial.begin(115200);   // PC debug serial port
   Serial1.begin(115200);  // RadarIQ device serial port
@@ -112,7 +124,7 @@ void setup()
   }
   
   // Set distance filter
-  if (RadarIQ_setDistanceFilter(myRadar, 50u, 500u) == RADARIQ_RETURN_VAL_OK)
+  if (RadarIQ_setDistanceFilter(myRadar, 50u, 1000u) == RADARIQ_RETURN_VAL_OK)
   {
     uint16_t dMin, dMax;
     if (RadarIQ_getDistanceFilter(myRadar, &dMin, &dMax) == RADARIQ_RETURN_VAL_OK)
@@ -229,13 +241,15 @@ void setup()
   }
 
   // Send start capture command
-  RadarIQ_start(myRadar, 10);
+  RadarIQ_start(myRadar, 0);
 }
 
 char buffer[512];
 
 void loop()
 {
+  static int16_t yMin = 10000;
+
   // Process the serial data
   RadarIQCommand_t packet = RadarIQ_readSerial(myRadar);
   
@@ -249,23 +263,33 @@ void loop()
       RadarIQ_getData(myRadar, &radarData);
       
       sprintf(buffer, "\n\r** Data num points = %u\n\r", radarData.pointCloud.numPoints);
-      
-      for (uint32_t i = 0u; i < radarData.pointCloud.numPoints; i++)
+
+      for (uint16_t i = 0u; i < radarData.pointCloud.numPoints; i++)
       {
-        sprintf(buffer, "*  %u: x = %i, y = %i, z = %i, i = %u, v = %i\n\r", i, 
+        //sprintf(buffer, "* x = %i\n\r", radarData.pointCloud.points[i].x);
+/*
+        sprintf(buffer, "* %i : x = %i, y = %i, z = %i, i = %u, v = %i\n\r", i, 
           radarData.pointCloud.points[i].x, radarData.pointCloud.points[i].y,
           radarData.pointCloud.points[i].z, radarData.pointCloud.points[i].intensity,
           radarData.pointCloud.points[i].velocity);
-        Serial.print(buffer);
+        Serial.print(buffer);*/
+
+        if (radarData.pointCloud.points[i].y < yMin)
+        {
+          yMin = radarData.pointCloud.points[i].y;
+        }
       }
       
+      sprintf(buffer, "* Distance = %i\n\r", yMin);
+      Serial.print(buffer);
+
       break;    
     } 
     
     // Processing statistics
     case RADARIQ_CMD_PROC_STATS:
     {
-      RadarIQProcessingStats_t processing;
+     /* RadarIQProcessingStats_t processing;
       RadarIQChipTemperatures_t temperatures;
       
       RadarIQ_getProcessingStats(myRadar, &processing);
@@ -281,7 +305,7 @@ void loop()
         temperatures.sensor1, temperatures.powerManagement, temperatures.rx0,
         temperatures.rx1, temperatures.rx2, temperatures.rx3, temperatures.tx0,
         temperatures.tx1, temperatures.tx2);
-      Serial.print(buffer);
+      Serial.print(buffer);*/
       
       break;    
     }
@@ -292,12 +316,12 @@ void loop()
       
       RadarIQ_getPointCloudStats(myRadar, &pointcloud);
       
-      sprintf(buffer, "* Pointcloud: %u, %u, %u, %u, %u, %u, %u, %u\n\r", pointcloud.frameAggregatingTime,
+      /*sprintf(buffer, "* Pointcloud: %u, %u, %u, %u, %u, %u, %u, %u\n\r", pointcloud.frameAggregatingTime,
         pointcloud.intensitySortTime, pointcloud.nearestNeighboursTime,
         pointcloud.uartTransmitTime, pointcloud.numFilteredPoints,
         pointcloud.numPointsTransmitted, pointcloud.inputPointsTruncated,
         pointcloud.outputPointsTruncated);
-      Serial.print(buffer);      
+      Serial.print(buffer);*/
 
       break;
     }
@@ -306,6 +330,26 @@ void loop()
     {
     }    
   }
+
+  // Check if an object was detected within 500mm
+  if (yMin < 1000)
+  {
+    noInterrupts();
+    int period = 1000 + ((int)abs(yMin) * 10); 
+    sprintf(buffer, "Period = %i\n\r", period);
+    Serial.print(buffer);
+    OCR1A = period;
+    TIMSK1 |= (1 << OCIE1A);  // Enable timer compare interrupt
+    interrupts();
+    
+  }
+  else
+  {    
+    TIMSK1 &= ~(1 << OCIE1A);  // Disable timer compare interrupt
+    digitalWrite(LED_BUILTIN, LOW);
+  }
+
+  yMin = 10000;
 }
 
 //------------------------------------------------------------------------------
@@ -355,4 +399,10 @@ void __assert(const char *__func, const char *__file, int __lineno, const char *
 
   delay(100);
   abort();
+}
+
+
+ISR(TIMER1_COMPA_vect)          // timer compare interrupt service routine
+{
+  digitalWrite(LED_BUILTIN, digitalRead(LED_BUILTIN) ^ 1);   // toggle LED pin
 }

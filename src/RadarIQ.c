@@ -1,18 +1,22 @@
-//------------------------------------------------------------------------------
-//                                                                            --
-//                             RadarIQ C-SDK                                  --
-//                                                                            --
-//                   (C) 2021 RadarIQ <support@radariq.io>                    --
-//                                                                            --
-//                            License: MIT                                    --
-//                                                                            --
-//------------------------------------------------------------------------------ 
+//-------------------------------------------------------------------------------------------------
+//                                                                            				     --
+//                             			RadarIQ C-SDK                                  			 --
+//                                                                            				     --
+//                   		(C) 2021 RadarIQ <support@radariq.io>                    			 --
+//                                                                            					 --
+//                            			License: MIT                                    	     --
+//                                                                            					 --
+//------------------------------------------------------------------------------------------------- 
 
 /**
  * @file
- * RadarIQ C module
+ * One line description of what the file does and ends with a full stop.
+ * More detailed description about what the file does if required
  *
- */
+ * @copyright Copyright (C) 2021 RadarIQ
+ *
+ * @author RadarIQ
+ */		
 
 //TODO remove unused byte helpers and rename the rest
 
@@ -26,38 +30,46 @@
 // DATA TYPES
 //===============================================================================================//
 
+/**
+ * UART packet command variants
+ */
 typedef enum
 {
-    RADARIQ_CMD_VAR_REQUEST     = 0,
-    RADARIQ_CMD_VAR_RESPONSE    = 1,
-    RADARIQ_CMD_VAR_SET         = 2
+    RADARIQ_CMD_VAR_REQUEST     = 0,	///< Requests a response from the device
+    RADARIQ_CMD_VAR_RESPONSE    = 1,	///< A response sent from the device
+    RADARIQ_CMD_VAR_SET         = 2		///< Sets a parameter of the device
 } RadarIQCommandVariant_t;
 
+/**
+ * UART packet recieving states
+ */
 typedef enum
 {
 	RX_STATE_WAITING_FOR_HEADER,
 	RX_STATE_WAITING_FOR_FOOTER,
 } RadarIQRxState_t;
 
-typedef enum
-{
-	RADARIQ_SUBFRAME_START = 0,
-	RADARIQ_SUBFRAME_MIDDLE = 1,
-	RADARIQ_SUBFRAME_END = 2
-} RadarIQSubframe_t;
-
+/**
+ * UART recieve buffer 
+ */
 typedef struct
 {
 	uint8_t data[RADARIQ_RX_BUFFER_SIZE];
 	uint16_t len;
 } RadarIQRxBuffer_t;
 
+/**
+ * UART transmit buffer 
+ */
 typedef struct
 {
 	uint8_t data[RADARIQ_TX_BUFFER_SIZE];
 	uint16_t len;
 } RadarIQTxBuffer_t;
 
+/**
+ * Types of messages sent from the device in a message packet
+ */
 typedef enum
 {
 	RADARIQ_MSG_TYPE_TEMPORARY 	= 0,
@@ -68,10 +80,23 @@ typedef enum
 	RADARIQ_MSG_TYPE_SUCCESS 	= 5
 } RadarIQMsgType_t;
 
+/**
+ * Subframe types for object tracking and pointcloud frames sent over multiple packets
+ */
+typedef enum
+{
+	RADARIQ_SUBFRAME_START = 0,
+	RADARIQ_SUBFRAME_MIDDLE = 1,
+	RADARIQ_SUBFRAME_END = 2
+} RadarIQSubframe_t;
+
 //===============================================================================================//
 // OBJECTS
 //===============================================================================================//
 
+/**
+ * The RadarIQ object definition
+ */
 struct RadarIQ_t
 {
 	RadarIQCaptureMode_t captureMode;
@@ -140,6 +165,13 @@ static void byteUnpack16Signed(int16_t const data, uint8_t * const dest);
 // GLOBAL-SCOPE FUNCTIONS
 //===============================================================================================//
 
+/**
+ * Allocates and initialises a RadarIQ object instance
+ * Memory is heap allocated - if memory fails to allocate, try reducing the 
+ *
+ * @param parameterName Description of the parameter
+ * @return Description of the return value
+ */ 
 RadarIQHandle_t RadarIQ_init(void(*sendSerialDataCallback)(uint8_t * const, const uint16_t),
 		RadarIQUartData_t(*readSerialDataCallback)(void),
 		void(*logCallback)(char * const))

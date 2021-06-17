@@ -1,8 +1,12 @@
-/**
- * @file
- * RadarIQ C module
- *
- */
+//-------------------------------------------------------------------------------------------------
+//                                                                            				     --
+//                             			RadarIQ C-SDK                                  			 --
+//                                                                            				     --
+//                   		(C) 2021 RadarIQ <support@radariq.io>                    			 --
+//                                                                            					 --
+//                            			License: MIT                                    	     --
+//                                                                            					 --
+//------------------------------------------------------------------------------------------------- 
 
 #ifndef SRC_RADARIQ_H_
 #define SRC_RADARIQ_H_
@@ -27,64 +31,76 @@ extern "C" {
 // DEFINITIONS
 //===============================================================================================//
 
-// UART buffer sizes
-#define RADARIQ_TX_BUFFER_SIZE			32u
-#define RADARIQ_RX_BUFFER_SIZE 			256u
+/* UART buffer sizes */
+#define RADARIQ_TX_BUFFER_SIZE			32u		///< Tx buffer size in bytes
+#define RADARIQ_RX_BUFFER_SIZE 			256u	///< Rx buffer size in bytes
 
-// Data storage sizes
-#define RADARIQ_MAX_POINTCLOUD			64u
-#define RADARIQ_MAX_OBJECTS				16u
+/* Frame data storage sizes */
+#define RADARIQ_MAX_POINTCLOUD			64u		///< Maximum number of point-cloud points to store in one frame
+#define RADARIQ_MAX_OBJECTS				16u		///< Maximum number of detected objects to store in one frame
 
-// Limits
-#define RADARIQ_MAX_MESSAGE_STRING		200u
-#define RADARIQ_MIN_FRAME_RATE			1u
-#define RADARIQ_MAX_FRAME_RATE			30u
-#define RADARIQ_MIN_DIST_FILT			0u
-#define RADARIQ_MAX_DIST_FILT			10000u
-#define RADARIQ_MIN_ANGLE_FILT			-55
-#define RADARIQ_MAX_ANGLE_FILT			55
-#define RADARIQ_MAX_CERTAINTY			9u
-#define RADARIQ_MAX_OBJ_SIZE			4u
+/* Limits */
+#define RADARIQ_MAX_MESSAGE_STRING		200u	///< Maximum string length of the message in message packets
+#define RADARIQ_MIN_FRAME_RATE			1u		///< Minimum capture frame rate in frames/second
+#define RADARIQ_MAX_FRAME_RATE			30u		///< Maximum capture frame rate in frames/second
+#define RADARIQ_MIN_DIST_FILT			0u		///< Minimum bound length of distance in millimeters
+#define RADARIQ_MAX_DIST_FILT			10000u	///< Maximum bound length of distance in millimeters
+#define RADARIQ_MIN_ANGLE_FILT			-55		///< Minimum bound angle of angle filter in degrees
+#define RADARIQ_MAX_ANGLE_FILT			55		///< Maximum bound angle of angle filter in degrees
+#define RADARIQ_MAX_CERTAINTY			9u		///< Maximum certainty level in point-cloud mode
+#define RADARIQ_MAX_OBJ_SIZE			4u		///< Maximum target object size in object-tracking mode
 
-// Macros
+/**
+ * Assertion macro - redefine if necessary or remove at your own risk
+ */
 #define radariq_assert(expr)			assert(expr)
-#define radariq_get_seconds				time(NULL)
+
+/**
+ * Assertion macro - redefine if necessary or remove at your own risk
+ */	
+#define radariq_get_seconds				(time(NULL) * 1000)
 
 //===============================================================================================//
 // DATA TYPES
 //===============================================================================================//
 
+/**
+ * UART packet commands sent to and from the RadarIQ device
+ */
 typedef enum
 {
-    RADARIQ_CMD_NONE			 	= -99,			//TODO: rename type to "packet" or something more fitting?
-    RADARIQ_CMD_ERROR			 	= -2,
-    RADARIQ_CMD_UNKNOWN				= -1,
-    RADARIQ_CMD_MESSAGE          	= 0x00,
-    RADARIQ_CMD_VERSION          	= 0x01,
-    RADARIQ_CMD_SERIAL           	= 0x02,
-    RADARIQ_CMD_RESET            	= 0x03,
-    RADARIQ_CMD_FRAME_RATE       	= 0x04,
-    RADARIQ_CMD_MODE             	= 0x05,
-    RADARIQ_CMD_DIST_FILT        	= 0x06,
-    RADARIQ_CMD_ANGLE_FILT       	= 0x07,
-    RADARIQ_CMD_MOVING_FILT      	= 0x08,
-    RADARIQ_CMD_SAVE             	= 0x09,
-    RADARIQ_CMD_PNT_DENSITY      	= 0x10,
-    RADARIQ_CMD_CERTAINTY        	= 0x11,
-    RADARIQ_CMD_HEIGHT_FILT      	= 0x12,
-    RADARIQ_CMD_IWR_VERSION      	= 0x14,
-    RADARIQ_CMD_SCENE_CALIB			= 0x15,		
-    RADARIQ_CMD_OBJECT_SIZE      	= 0x16,		
-    RADARIQ_CMD_CAPTURE_START    	= 0x64,
-    RADARIQ_CMD_CAPTURE_STOP     	= 0x65,
-    RADARIQ_CMD_PNT_CLOUD_FRAME  	= 0x66,
-	RADARIQ_CMD_OBJ_TRACKING_FRAME	= 0x67,
-	RADARIQ_CMD_PROC_STATS			= 0x68,
-	RADARIQ_CMD_RAW_DATA			= 0x69,
-	RADARIQ_CMD_POINTCLOUD_STATS    = 0x70,
-	RADARIQ_CMD_POWER_STATUS     	= 0x71
+    RADARIQ_CMD_NONE			 	= -99,		///< Value indicates no packet has been recieved
+    RADARIQ_CMD_ERROR			 	= -2,		///< Value indicates an error occured during packet parsing
+    RADARIQ_CMD_UNKNOWN				= -1,		///< Value indicates an unknown packet type was recieved
+    RADARIQ_CMD_MESSAGE          	= 0x00,		///< Messages sent from device
+    RADARIQ_CMD_VERSION          	= 0x01,		///< Firmware and hardware version of device
+    RADARIQ_CMD_SERIAL           	= 0x02,		///< Serial number of device
+    RADARIQ_CMD_RESET            	= 0x03,		///< Resets the device
+    RADARIQ_CMD_FRAME_RATE       	= 0x04,		///< Sets the capture frame-rate of device
+    RADARIQ_CMD_MODE             	= 0x05,		///< Sets the capture mode of the device
+    RADARIQ_CMD_DIST_FILT        	= 0x06,		///< Sets the distance filter of the device in millimeters	
+    RADARIQ_CMD_ANGLE_FILT       	= 0x07,		///< Sets the angle filter of the device in degrees	
+    RADARIQ_CMD_MOVING_FILT      	= 0x08,		///< Sets the moving filter setting of the device	
+    RADARIQ_CMD_SAVE             	= 0x09,		///< Saves the device settings to its EEPROM
+    RADARIQ_CMD_PNT_DENSITY      	= 0x10,		///< Sets the point-cloud point density
+    RADARIQ_CMD_CERTAINTY        	= 0x11,		///< Sets the point-cloud certainty level
+    RADARIQ_CMD_HEIGHT_FILT      	= 0x12,		///< Sets the height filter of the device in millimeters	
+    RADARIQ_CMD_IWR_VERSION      	= 0x14,		///< Returns the firmware versions running on the IWR6843
+    RADARIQ_CMD_SCENE_CALIB			= 0x15,		///< Runs a scene calibration on the device
+    RADARIQ_CMD_OBJECT_SIZE      	= 0x16,		///< Sets the target object size for object-tracking mode
+    RADARIQ_CMD_CAPTURE_START    	= 0x64,		///< Starts a radar data capture on the device
+    RADARIQ_CMD_CAPTURE_STOP     	= 0x65,		///< Stops a radar data capture
+    RADARIQ_CMD_PNT_CLOUD_FRAME  	= 0x66,		///< Point-cloud frame data returned from device
+	RADARIQ_CMD_OBJ_TRACKING_FRAME	= 0x67,		///< Object-tracking frame data returned from device
+	RADARIQ_CMD_PROC_STATS			= 0x68,		///< Processing statistics returned from device
+	RADARIQ_CMD_RAW_DATA			= 0x69,		///< Raw data frame data returned from device
+	RADARIQ_CMD_POINTCLOUD_STATS    = 0x70,		///< Point-cloud statistics returned from device
+	RADARIQ_CMD_POWER_STATUS     	= 0x71		///< Power ok flag returned from device
 } RadarIQCommand_t;
 
+/**
+ * Return values for functions
+ */
 typedef enum
 {
 	RADARIQ_RETURN_VAL_OK = 0,
@@ -92,6 +108,9 @@ typedef enum
 	RADARIQ_RETURN_VAL_ERR = 2
 } RadarIQReturnVal_t;
 
+/**
+ * Radar data capture modes
+ */
 typedef enum
 {
 	RADARIQ_MODE_POINT_CLOUD = 0,
@@ -99,18 +118,27 @@ typedef enum
 	RADARIQ_MODE_RAW_DATA = 2,
 }RadarIQCaptureMode_t;
 
+/**
+ * Moving filter modes
+ */
 typedef enum
 {
 	RADARIQ_MOVING_BOTH = 0,
 	RADARIQ_MOVING_OBJECTS_ONLY = 1
 }RadarIQMovingFilterMode_t;
 
+/**
+ * Reset command codes
+ */
 typedef enum
 {
 	RADARIQ_RESET_REBOOT = 0,
 	RADARIQ_RESET_FACTORY_SETTINGS = 1
 }RadarIQResetCode_t;
 
+/**
+ * Point-cloud point density settings
+ */
 typedef enum
 {
 	RADARIQ_DENSITY_NORMAL = 0,
@@ -118,6 +146,9 @@ typedef enum
 	RADARIQ_DENSITY_VERY_DENSE = 2
 }RadarIQPointDensity_t;
 
+/**
+ * Point-cloud data point
+ */
 typedef struct
 {
 	int16_t x;
@@ -127,6 +158,9 @@ typedef struct
 	int16_t velocity;
 } RadarIQDataPoint_t;
 
+/**
+ * Point-cloud data frame
+ */
 typedef struct
 {
 	bool isFrameComplete;
@@ -134,6 +168,9 @@ typedef struct
 	RadarIQDataPoint_t points[RADARIQ_MAX_POINTCLOUD];
 } RadarIQDataPointCloud_t;
 
+/**
+ * Object-tracking object data
+ */
 typedef struct
 {
 	uint8_t targetId;
@@ -148,6 +185,9 @@ typedef struct
 	int16_t zAcc;
 } RadarIQDataObject_t;
 
+/**
+ * Object-tracking frame data
+ */
 typedef struct
 {
 	bool isFrameComplete;
@@ -155,12 +195,18 @@ typedef struct
 	RadarIQDataObject_t objects[RADARIQ_MAX_OBJECTS];
 } RadarIQDataObjectTracking_t;
 
+/**
+ * Frame data - only one type can be accessed at one time
+ */
 typedef union
 {
 	RadarIQDataPointCloud_t pointCloud;
 	RadarIQDataObjectTracking_t objectTracking;
 } RadarIQData_t;
 
+/**
+ * Radar chip temperature measurements sent from RadarIQ device
+ */
 typedef struct
 {
 	int16_t sensor0;
@@ -175,6 +221,9 @@ typedef struct
 	int16_t tx2;
 } RadarIQChipTemperatures_t;
 
+/**
+ * Radar data processing statistics sent from RadarIQ device
+ */
 typedef struct
 {
 	uint32_t activeFrameCPULoad;
@@ -186,6 +235,9 @@ typedef struct
 	uint32_t uartTransmitTime;
 } RadarIQProcessingStats_t;
 
+/**
+ * Radar point-cloud processing statistics sent from RadarIQ device
+ */
 typedef struct
 {
 	uint32_t frameAggregatingTime;
