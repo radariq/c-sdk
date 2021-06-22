@@ -1,8 +1,22 @@
+//-------------------------------------------------------------------------------------------------
+//                                                                            				     --
+//                             			RadarIQ C-SDK                                  			 --
+//                                                                            				     --
+//                   		(C) 2021 RadarIQ <support@radariq.io>                    			 --
+//                                                                            					 --
+//                            			License: MIT                                    	     --
+//                                                                            					 --
+//------------------------------------------------------------------------------------------------- 
+
 /**
  * @file
- * RadarIQ C module
+ * One line description of what the file does and ends with a full stop.
+ * More detailed description about what the file does if required
  *
- */
+ * @copyright Copyright (C) 2021 RadarIQ
+ *
+ * @author RadarIQ
+ */		
 
 //TODO remove unused byte helpers and rename the rest
 
@@ -16,52 +30,73 @@
 // DATA TYPES
 //===============================================================================================//
 
+/**
+ * UART packet command variants
+ */
 typedef enum
 {
-    RADARIQ_CMD_VAR_REQUEST     = 0,
-    RADARIQ_CMD_VAR_RESPONSE    = 1,
-    RADARIQ_CMD_VAR_SET         = 2
+    RADARIQ_CMD_VAR_REQUEST     = 0,	///< Requests a response from the device
+    RADARIQ_CMD_VAR_RESPONSE    = 1,	///< A response sent from the device
+    RADARIQ_CMD_VAR_SET         = 2		///< Sets a parameter of the device
 } RadarIQCommandVariant_t;
 
+/**
+ * UART packet recieving states
+ */
 typedef enum
 {
-	RX_STATE_WAITING_FOR_HEADER,
-	RX_STATE_WAITING_FOR_FOOTER,
+	RX_STATE_WAITING_FOR_HEADER,		///< Waiting for header byte to be recieved (RADARIQ_PACKET_HEAD)	
+	RX_STATE_WAITING_FOR_FOOTER,		///< Waiting for footer byte to be recieved (RADARIQ_PACKET_FOOT)	
 } RadarIQRxState_t;
 
-typedef enum
-{
-	RADARIQ_SUBFRAME_START = 0,
-	RADARIQ_SUBFRAME_MIDDLE = 1,
-	RADARIQ_SUBFRAME_END = 2
-} RadarIQSubframe_t;
-
+/**
+ * UART recieve buffer from device
+ */
 typedef struct
 {
-	uint8_t data[RADARIQ_RX_BUFFER_SIZE];
-	uint16_t len;
+	uint8_t data[RADARIQ_RX_BUFFER_SIZE];	///< Buffer to store a single packet
+	uint16_t len;							///< Length of packet in bytes
 } RadarIQRxBuffer_t;
 
+/**
+ * UART transmit buffer to device
+ */
 typedef struct
 {
-	uint8_t data[RADARIQ_TX_BUFFER_SIZE];
-	uint16_t len;
+	uint8_t data[RADARIQ_TX_BUFFER_SIZE];	///< Buffer to store a single packet
+	uint16_t len;							///< Length of packet in bytes
 } RadarIQTxBuffer_t;
 
+/**
+ * Types of messages sent from the device in a message packet
+ */
 typedef enum
 {
-	RADARIQ_MSG_TYPE_TEMPORARY 	= 0,
-	RADARIQ_MSG_TYPE_DEBUG 		= 1,
-	RADARIQ_MSG_TYPE_INFO 		= 2,
-	RADARIQ_MSG_TYPE_WARNING 	= 3,
-	RADARIQ_MSG_TYPE_ERROR 		= 4,
-	RADARIQ_MSG_TYPE_SUCCESS 	= 5
+	RADARIQ_MSG_TYPE_TEMPORARY 	= 0,		///< Temporary messages not intended to be used permanently
+	RADARIQ_MSG_TYPE_DEBUG 		= 1,		///< Debug information about an operation
+	RADARIQ_MSG_TYPE_INFO 		= 2,		///< General information about an operation
+	RADARIQ_MSG_TYPE_WARNING 	= 3,		///< An operation was completed but not as expected
+	RADARIQ_MSG_TYPE_ERROR 		= 4,		///< An operation was not completed due to an error
+	RADARIQ_MSG_TYPE_SUCCESS 	= 5			///< An operation completed successfully
 } RadarIQMsgType_t;
+
+/**
+ * Sub-frame types for object tracking and pointcloud frames sent over multiple packets
+ */
+typedef enum
+{
+	RADARIQ_SUBFRAME_START = 0,				///< Sub-frame is the first of multiple sub-frames
+	RADARIQ_SUBFRAME_MIDDLE = 1,			///< Sub-frame is 1 or more of the middle sub-frames
+	RADARIQ_SUBFRAME_END = 2				///< Sub-frame is the last (or only) sub-frame
+} RadarIQSubframe_t;
 
 //===============================================================================================//
 // OBJECTS
 //===============================================================================================//
 
+/**
+ * The RadarIQ object definition
+ */
 struct RadarIQ_t
 {
 	RadarIQCaptureMode_t captureMode;
@@ -88,8 +123,11 @@ struct RadarIQ_t
 // CONSTANTS
 //===============================================================================================//
 
-#define RADARIQ_PACKET_ESC			(uint8_t)0xB2
-#define RADARIQ_PACKET_XOR			(uint8_t)0x04
+/**
+ * UART packet control bytes
+ */
+#define RADARIQ_PACKET_ESC			(uint8_t)0xB2	///< Escape byte used for any control bytes found in data
+#define RADARIQ_PACKET_XOR			(uint8_t)0x04	///< Exclusive OR byte used for any control bytes found in data
 #define RADARIQ_PACKET_HEAD			(uint8_t)0xB0
 #define RADARIQ_PACKET_FOOT			(uint8_t)0xB1
 
@@ -130,6 +168,16 @@ static void byteUnpack16Signed(int16_t const data, uint8_t * const dest);
 // GLOBAL-SCOPE FUNCTIONS
 //===============================================================================================//
 
+/**
+ * Allocates and initialises a RadarIQ object instance using heap allocation
+ * If memory fails to allocate, try reducing the RADARIQ_MAX_POINTCLOUD or RADARIQ_MAX_OBJECTS values
+ *
+ * @param sendSerialDataCallback Callback function for sending data over UART to the device
+ * @param readSerialDataCallback Callback function for reading UART data from the device
+ * @param logCallback Callback function for printing out debug messages e.g. over USB serial
+ * 
+ * @return Description of the return value
+ */ 
 RadarIQHandle_t RadarIQ_init(void(*sendSerialDataCallback)(uint8_t * const, const uint16_t),
 		RadarIQUartData_t(*readSerialDataCallback)(void),
 		void(*logCallback)(char * const))
@@ -152,6 +200,13 @@ RadarIQHandle_t RadarIQ_init(void(*sendSerialDataCallback)(uint8_t * const, cons
 	return handle;
 }
 
+/**
+ * Reads data from the device UART using the provided callback and checks for a complete packet
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * 
+ * @return A packet command value from RadarIQCommand_t, or negative value if none recieved or an error occured
+ */ 
 RadarIQCommand_t RadarIQ_readSerial(const RadarIQHandle_t obj)
 {
 	radariq_assert(NULL != obj);
@@ -160,57 +215,62 @@ RadarIQCommand_t RadarIQ_readSerial(const RadarIQHandle_t obj)
 	RadarIQUartData_t rxData;
 	rxData = obj->readSerialDataCallback();
 	
-	if (!rxData.isReadable)
+	if (rxData.isReadable)
 	{
-		return packet;	
-	}
-
-	switch(obj->rxState)
-	{
-		case RX_STATE_WAITING_FOR_HEADER:
+		switch(obj->rxState)
 		{
-			if (RADARIQ_PACKET_HEAD == rxData.data)
+			case RX_STATE_WAITING_FOR_HEADER:
 			{
-				obj->rxBuffer.data[0] = rxData.data;
-				obj->rxBuffer.len = 1u;
-
-				obj->rxState = RX_STATE_WAITING_FOR_FOOTER;
-			}
-
-			break;
-		}
-		case RX_STATE_WAITING_FOR_FOOTER:
-		{
-			obj->rxBuffer.data[obj->rxBuffer.len] = rxData.data;
-			obj->rxBuffer.len = (obj->rxBuffer.len + 1) % RADARIQ_RX_BUFFER_SIZE;
-
-			if (RADARIQ_PACKET_FOOT == rxData.data)
-			{
-				bool success = RadarIQ_decodePacket(obj);
-
-				if (success)
+				if (RADARIQ_PACKET_HEAD == rxData.data)
 				{
-					packet = RadarIQ_parsePacket(obj);
-				}
-				else
-				{
-					packet = RADARIQ_CMD_ERROR;
+					obj->rxBuffer.data[0] = rxData.data;
+					obj->rxBuffer.len = 1u;
+
+					obj->rxState = RX_STATE_WAITING_FOR_FOOTER;
 				}
 
-				obj->rxState = RX_STATE_WAITING_FOR_HEADER;
+				break;
 			}
+			case RX_STATE_WAITING_FOR_FOOTER:
+			{
+				obj->rxBuffer.data[obj->rxBuffer.len] = rxData.data;
+				obj->rxBuffer.len = (obj->rxBuffer.len + 1) % RADARIQ_RX_BUFFER_SIZE;
 
-			break;
-		}
-		default:
-		{
-			break;
+				if (RADARIQ_PACKET_FOOT == rxData.data)
+				{
+					bool success = RadarIQ_decodePacket(obj);
+
+					if (success)
+					{
+						packet = RadarIQ_parsePacket(obj);
+					}
+					else
+					{
+						packet = RADARIQ_CMD_ERROR;
+					}
+
+					obj->rxState = RX_STATE_WAITING_FOR_HEADER;
+				}
+
+				break;
+			}
+			default:
+			{
+				break;
+			}
 		}
 	}
 
 	return packet;
 }
 
+/**
+ * Reads data from the device UART using the provided callback and checks for a complete packet
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * 
+ * @return A packet command value from RadarIQCommand_t, or negative value if none recieved or an error occured
+ */ 
 void RadarIQ_getData(const RadarIQHandle_t obj, RadarIQData_t * dest)
 {
 	radariq_assert(NULL != obj);
