@@ -135,17 +135,6 @@ Enumerations</h2></td></tr>
 , <a class="el" href="src_2_radar_i_q_8c.html#abe16e9f6563e1567867e6479f9346aedabf3e5bf457fcc7a49ec0270c41ef1c97">RX_STATE_WAITING_FOR_FOOTER</a>
  }</td></tr>
 <tr class="separator:abe16e9f6563e1567867e6479f9346aed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a29616e72d96a20b99bc8ec8174e86bea"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="src_2_radar_i_q_8c.html#a29616e72d96a20b99bc8ec8174e86bea">RadarIQSubframe_t</a> { <br />
-&#160;&#160;<a class="el" href="demos_2arduino_2_demo_2_radar_i_q_8c.html#a29616e72d96a20b99bc8ec8174e86beaacbf508427effb4f726efc0f558ce5155">RADARIQ_SUBFRAME_START</a> = 0
-, <a class="el" href="demos_2arduino_2_demo_2_radar_i_q_8c.html#a29616e72d96a20b99bc8ec8174e86beaa7c0cf85a9e7053538e14b13ac675a907">RADARIQ_SUBFRAME_MIDDLE</a> = 1
-, <a class="el" href="demos_2arduino_2_demo_2_radar_i_q_8c.html#a29616e72d96a20b99bc8ec8174e86beaa740541774b4ca0b2f9d1b2c44ff4fb83">RADARIQ_SUBFRAME_END</a> = 2
-, <a class="el" href="src_2_radar_i_q_8c.html#a29616e72d96a20b99bc8ec8174e86beaacbf508427effb4f726efc0f558ce5155">RADARIQ_SUBFRAME_START</a> = 0
-, <br />
-&#160;&#160;<a class="el" href="src_2_radar_i_q_8c.html#a29616e72d96a20b99bc8ec8174e86beaa7c0cf85a9e7053538e14b13ac675a907">RADARIQ_SUBFRAME_MIDDLE</a> = 1
-, <a class="el" href="src_2_radar_i_q_8c.html#a29616e72d96a20b99bc8ec8174e86beaa740541774b4ca0b2f9d1b2c44ff4fb83">RADARIQ_SUBFRAME_END</a> = 2
-<br />
- }</td></tr>
-<tr class="separator:a29616e72d96a20b99bc8ec8174e86bea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a997c582f9a8797996fbcc0970a95d111"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="src_2_radar_i_q_8c.html#a997c582f9a8797996fbcc0970a95d111">RadarIQMsgType_t</a> { <br />
 &#160;&#160;<a class="el" href="demos_2arduino_2_demo_2_radar_i_q_8c.html#a997c582f9a8797996fbcc0970a95d111a4f91d07020cbef5ee5c41d69a3da8a6d">RADARIQ_MSG_TYPE_TEMPORARY</a> = 0
 , <a class="el" href="demos_2arduino_2_demo_2_radar_i_q_8c.html#a997c582f9a8797996fbcc0970a95d111a939cf58d29cc514ff38b2610598f81e7">RADARIQ_MSG_TYPE_DEBUG</a> = 1
@@ -164,6 +153,17 @@ Enumerations</h2></td></tr>
 <br />
  }</td></tr>
 <tr class="separator:a997c582f9a8797996fbcc0970a95d111"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29616e72d96a20b99bc8ec8174e86bea"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="src_2_radar_i_q_8c.html#a29616e72d96a20b99bc8ec8174e86bea">RadarIQSubframe_t</a> { <br />
+&#160;&#160;<a class="el" href="demos_2arduino_2_demo_2_radar_i_q_8c.html#a29616e72d96a20b99bc8ec8174e86beaacbf508427effb4f726efc0f558ce5155">RADARIQ_SUBFRAME_START</a> = 0
+, <a class="el" href="demos_2arduino_2_demo_2_radar_i_q_8c.html#a29616e72d96a20b99bc8ec8174e86beaa7c0cf85a9e7053538e14b13ac675a907">RADARIQ_SUBFRAME_MIDDLE</a> = 1
+, <a class="el" href="demos_2arduino_2_demo_2_radar_i_q_8c.html#a29616e72d96a20b99bc8ec8174e86beaa740541774b4ca0b2f9d1b2c44ff4fb83">RADARIQ_SUBFRAME_END</a> = 2
+, <a class="el" href="src_2_radar_i_q_8c.html#a29616e72d96a20b99bc8ec8174e86beaacbf508427effb4f726efc0f558ce5155">RADARIQ_SUBFRAME_START</a> = 0
+, <br />
+&#160;&#160;<a class="el" href="src_2_radar_i_q_8c.html#a29616e72d96a20b99bc8ec8174e86beaa7c0cf85a9e7053538e14b13ac675a907">RADARIQ_SUBFRAME_MIDDLE</a> = 1
+, <a class="el" href="src_2_radar_i_q_8c.html#a29616e72d96a20b99bc8ec8174e86beaa740541774b4ca0b2f9d1b2c44ff4fb83">RADARIQ_SUBFRAME_END</a> = 2
+<br />
+ }</td></tr>
+<tr class="separator:a29616e72d96a20b99bc8ec8174e86bea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -239,7 +239,9 @@ Functions</h2></td></tr>
 <tr class="separator:afcb5cdbf33337762a369f95da70242ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>RadarIQ C module </p>
+<div class="textblock"><p>One line description of what the file does and ends with a full stop. More detailed description about what the file does if required</p>
+<dl class="section copyright"><dt>Copyright</dt><dd>Copyright (C) 2021 RadarIQ</dd></dl>
+<dl class="section author"><dt>Author</dt><dd>RadarIQ </dd></dl>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a2fdc5123ad0e4b50e2a1c5cbc84f078b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2fdc5123ad0e4b50e2a1c5cbc84f078b">&#9670;&nbsp;</a></span>RADARIQ_PACKET_ESC</h2>
@@ -309,13 +311,20 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>UART packet command variants </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aec427306d3faa22244147dd32a3b81caa78c4cb4e683109e5df518f3ca503f491"></a>RADARIQ_CMD_VAR_REQUEST&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="aec427306d3faa22244147dd32a3b81caa42ec431f84ccf787cfb9938d090d0edf"></a>RADARIQ_CMD_VAR_RESPONSE&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="aec427306d3faa22244147dd32a3b81caa0befa335e28cbf87ada1c34dd7e987cd"></a>RADARIQ_CMD_VAR_SET&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="aec427306d3faa22244147dd32a3b81caa78c4cb4e683109e5df518f3ca503f491"></a>RADARIQ_CMD_VAR_REQUEST&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="aec427306d3faa22244147dd32a3b81caa42ec431f84ccf787cfb9938d090d0edf"></a>RADARIQ_CMD_VAR_RESPONSE&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="aec427306d3faa22244147dd32a3b81caa0befa335e28cbf87ada1c34dd7e987cd"></a>RADARIQ_CMD_VAR_SET&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aec427306d3faa22244147dd32a3b81caa78c4cb4e683109e5df518f3ca503f491"></a>RADARIQ_CMD_VAR_REQUEST&#160;</td><td class="fielddoc"><p>Requests a response from the device. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aec427306d3faa22244147dd32a3b81caa42ec431f84ccf787cfb9938d090d0edf"></a>RADARIQ_CMD_VAR_RESPONSE&#160;</td><td class="fielddoc"><p>A response sent from the device. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aec427306d3faa22244147dd32a3b81caa0befa335e28cbf87ada1c34dd7e987cd"></a>RADARIQ_CMD_VAR_SET&#160;</td><td class="fielddoc"><p>Sets a parameter of the device. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aec427306d3faa22244147dd32a3b81caa78c4cb4e683109e5df518f3ca503f491"></a>RADARIQ_CMD_VAR_REQUEST&#160;</td><td class="fielddoc"><p>Requests a response from the device. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aec427306d3faa22244147dd32a3b81caa42ec431f84ccf787cfb9938d090d0edf"></a>RADARIQ_CMD_VAR_RESPONSE&#160;</td><td class="fielddoc"><p>A response sent from the device. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aec427306d3faa22244147dd32a3b81caa0befa335e28cbf87ada1c34dd7e987cd"></a>RADARIQ_CMD_VAR_SET&#160;</td><td class="fielddoc"><p>Sets a parameter of the device. </p>
+</td></tr>
 </table>
 
 </div>
@@ -331,13 +340,20 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Types of messages sent from the device in a message packet </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a997c582f9a8797996fbcc0970a95d111a4f91d07020cbef5ee5c41d69a3da8a6d"></a>RADARIQ_MSG_TYPE_TEMPORARY&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a997c582f9a8797996fbcc0970a95d111a939cf58d29cc514ff38b2610598f81e7"></a>RADARIQ_MSG_TYPE_DEBUG&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a997c582f9a8797996fbcc0970a95d111aa4acba5a8dba321927caa46f18f925fc"></a>RADARIQ_MSG_TYPE_INFO&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a997c582f9a8797996fbcc0970a95d111a866da776c92a3dc646d2e35a38cc3415"></a>RADARIQ_MSG_TYPE_WARNING&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a997c582f9a8797996fbcc0970a95d111a4cdbe888da780df766f08f8364be2605"></a>RADARIQ_MSG_TYPE_ERROR&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a997c582f9a8797996fbcc0970a95d111a34159ad49ea0e089b464d6ecfb05d41b"></a>RADARIQ_MSG_TYPE_SUCCESS&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a997c582f9a8797996fbcc0970a95d111a4f91d07020cbef5ee5c41d69a3da8a6d"></a>RADARIQ_MSG_TYPE_TEMPORARY&#160;</td><td class="fielddoc"><p>Temporary messages not intended to be used permanently. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a997c582f9a8797996fbcc0970a95d111a939cf58d29cc514ff38b2610598f81e7"></a>RADARIQ_MSG_TYPE_DEBUG&#160;</td><td class="fielddoc"><p>Debug information about an operation. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a997c582f9a8797996fbcc0970a95d111aa4acba5a8dba321927caa46f18f925fc"></a>RADARIQ_MSG_TYPE_INFO&#160;</td><td class="fielddoc"><p>General information about an operation. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a997c582f9a8797996fbcc0970a95d111a866da776c92a3dc646d2e35a38cc3415"></a>RADARIQ_MSG_TYPE_WARNING&#160;</td><td class="fielddoc"><p>An operation was completed but not as expected. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a997c582f9a8797996fbcc0970a95d111a4cdbe888da780df766f08f8364be2605"></a>RADARIQ_MSG_TYPE_ERROR&#160;</td><td class="fielddoc"><p>An operation was not completed due to an error. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a997c582f9a8797996fbcc0970a95d111a34159ad49ea0e089b464d6ecfb05d41b"></a>RADARIQ_MSG_TYPE_SUCCESS&#160;</td><td class="fielddoc"><p>An operation completed successfully. </p>
+</td></tr>
 <tr><td class="fieldname"><a id="a997c582f9a8797996fbcc0970a95d111a4f91d07020cbef5ee5c41d69a3da8a6d"></a>RADARIQ_MSG_TYPE_TEMPORARY&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a997c582f9a8797996fbcc0970a95d111a939cf58d29cc514ff38b2610598f81e7"></a>RADARIQ_MSG_TYPE_DEBUG&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a997c582f9a8797996fbcc0970a95d111aa4acba5a8dba321927caa46f18f925fc"></a>RADARIQ_MSG_TYPE_INFO&#160;</td><td class="fielddoc"></td></tr>
@@ -359,9 +375,14 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>UART packet recieving states </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="abe16e9f6563e1567867e6479f9346aeda27b53898b088bcf9c2269c3df0304b5b"></a>RX_STATE_WAITING_FOR_HEADER&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="abe16e9f6563e1567867e6479f9346aedabf3e5bf457fcc7a49ec0270c41ef1c97"></a>RX_STATE_WAITING_FOR_FOOTER&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="abe16e9f6563e1567867e6479f9346aeda27b53898b088bcf9c2269c3df0304b5b"></a>RX_STATE_WAITING_FOR_HEADER&#160;</td><td class="fielddoc"><p>Waiting for header byte to be recieved (RADARIQ_PACKET_HEAD) <br  />
+ </p>
+</td></tr>
+<tr><td class="fieldname"><a id="abe16e9f6563e1567867e6479f9346aedabf3e5bf457fcc7a49ec0270c41ef1c97"></a>RX_STATE_WAITING_FOR_FOOTER&#160;</td><td class="fielddoc"><p>Waiting for footer byte to be recieved (RADARIQ_PACKET_FOOT) <br  />
+ </p>
+</td></tr>
 <tr><td class="fieldname"><a id="abe16e9f6563e1567867e6479f9346aeda27b53898b088bcf9c2269c3df0304b5b"></a>RX_STATE_WAITING_FOR_HEADER&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="abe16e9f6563e1567867e6479f9346aedabf3e5bf457fcc7a49ec0270c41ef1c97"></a>RX_STATE_WAITING_FOR_FOOTER&#160;</td><td class="fielddoc"></td></tr>
 </table>
@@ -379,10 +400,14 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Subframe types for object tracking and pointcloud frames sent over multiple packets </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a29616e72d96a20b99bc8ec8174e86beaacbf508427effb4f726efc0f558ce5155"></a>RADARIQ_SUBFRAME_START&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a29616e72d96a20b99bc8ec8174e86beaa7c0cf85a9e7053538e14b13ac675a907"></a>RADARIQ_SUBFRAME_MIDDLE&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a29616e72d96a20b99bc8ec8174e86beaa740541774b4ca0b2f9d1b2c44ff4fb83"></a>RADARIQ_SUBFRAME_END&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a29616e72d96a20b99bc8ec8174e86beaacbf508427effb4f726efc0f558ce5155"></a>RADARIQ_SUBFRAME_START&#160;</td><td class="fielddoc"><p>Sub-frame is the first of multiple sub-frames. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a29616e72d96a20b99bc8ec8174e86beaa7c0cf85a9e7053538e14b13ac675a907"></a>RADARIQ_SUBFRAME_MIDDLE&#160;</td><td class="fielddoc"><p>Sub-frame is 1 or more of the middle sub-frames. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a29616e72d96a20b99bc8ec8174e86beaa740541774b4ca0b2f9d1b2c44ff4fb83"></a>RADARIQ_SUBFRAME_END&#160;</td><td class="fielddoc"><p>Sub-frame is the last (or only) sub-frame. </p>
+</td></tr>
 <tr><td class="fieldname"><a id="a29616e72d96a20b99bc8ec8174e86beaacbf508427effb4f726efc0f558ce5155"></a>RADARIQ_SUBFRAME_START&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a29616e72d96a20b99bc8ec8174e86beaa7c0cf85a9e7053538e14b13ac675a907"></a>RADARIQ_SUBFRAME_MIDDLE&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a29616e72d96a20b99bc8ec8174e86beaa740541774b4ca0b2f9d1b2c44ff4fb83"></a>RADARIQ_SUBFRAME_END&#160;</td><td class="fielddoc"></td></tr>
@@ -506,6 +531,14 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Gets a copy of the most recent data recieved from device Should be called immediately after a pointcloud or object detection packet is returned from <a class="el" href="demos_2arduino_2_demo_2_radar_i_q_8c.html#a7a048aba3e0deee29a219cadc44198e2">RadarIQ_readSerial()</a></p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">obj</td><td>The RadarIQ object handle returned from <a class="el" href="demos_2arduino_2_demo_2_radar_i_q_8c.html#a90af67aeab8584060bc564d9ca3a21ad">RadarIQ_init()</a> </td></tr>
+    <tr><td class="paramname">obj</td><td>Pointer to a <a class="el" href="union_radar_i_q_data__t.html">RadarIQData_t</a> struct to copy the data into </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -992,6 +1025,14 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Allocates and initialises a RadarIQ object instance Memory is heap allocated - if memory fails to allocate, try reducing the</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parameterName</td><td>Description of the parameter </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Description of the return value </dd></dl>
 
 </div>
 </div>
@@ -1028,6 +1069,14 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Reads data from the device UART using the provided callback and checks for a complete packet</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">obj</td><td>The RadarIQ object handle returned from <a class="el" href="demos_2arduino_2_demo_2_radar_i_q_8c.html#a90af67aeab8584060bc564d9ca3a21ad">RadarIQ_init()</a></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A packet command value from RadarIQCommand_t, or negative value if none recieved or an error occured </dd></dl>
 
 </div>
 </div>

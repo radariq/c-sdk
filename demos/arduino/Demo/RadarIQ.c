@@ -18,8 +18,6 @@
  * @author RadarIQ
  */		
 
-//TODO remove unused byte helpers and rename the rest
-
 //===============================================================================================//
 // INCLUDES
 //===============================================================================================//
@@ -128,8 +126,8 @@ struct RadarIQ_t
  */
 #define RADARIQ_PACKET_ESC			(uint8_t)0xB2	///< Escape byte used for any control bytes found in data
 #define RADARIQ_PACKET_XOR			(uint8_t)0x04	///< Exclusive OR byte used for any control bytes found in data
-#define RADARIQ_PACKET_HEAD			(uint8_t)0xB0
-#define RADARIQ_PACKET_FOOT			(uint8_t)0xB1
+#define RADARIQ_PACKET_HEAD			(uint8_t)0xB0	///< Packet header byte
+#define RADARIQ_PACKET_FOOT			(uint8_t)0xB1	///< Packet footer byte
 
 //===============================================================================================//
 // FILE-SCOPE VARIABLES
@@ -139,15 +137,16 @@ struct RadarIQ_t
 // FILE-SCOPE FUNCTION PROTOTYPES
 //===============================================================================================//
 
+// Packet processing
 static void RadarIQ_sendPacket(const RadarIQHandle_t obj);
 static RadarIQCommand_t RadarIQ_pollResponse(const RadarIQHandle_t obj);
-static bool RadarIQ_decodePacket(const RadarIQHandle_t obj);
+static RadarIQReturnVal_t RadarIQ_decodePacket(const RadarIQHandle_t obj);
 static RadarIQCommand_t RadarIQ_parsePacket(const RadarIQHandle_t obj);
-static uint16_t getCrc16Ccitt(uint8_t const * array, uint8_t len);
-static void encodeHelper(const RadarIQHandle_t obj, uint8_t const databyte);
+static uint16_t RadarIQ_getCrc16Ccitt(uint8_t const * array, uint8_t len);
+static void RadarIQ_encodeHelper(const RadarIQHandle_t obj, uint8_t const databyte);
 
 // Packet parsing
-static RadarIQCommand_t RadarIQ_parsePointCloud(const RadarIQHandle_t obj);
+static void RadarIQ_parsePointCloud(const RadarIQHandle_t obj);
 static void RadarIQ_parseObjectTracking(const RadarIQHandle_t obj);
 static void RadarIQ_parseMessage(const RadarIQHandle_t obj);
 static void RadarIQ_parseProcessingStats(const RadarIQHandle_t obj);
@@ -155,14 +154,10 @@ static void RadarIQ_parsePointCloudStats(const RadarIQHandle_t obj);
 static void RadarIQ_parsePowerStatus(const RadarIQHandle_t obj);
 
 // Byte helpers
-static uint32_t bytePack32(const uint8_t * const data);
-static int32_t bytePack32Signed(const uint8_t * const data);
-static uint16_t bytePack16(const uint8_t * const data);
-static int16_t bytePack16Signed(const uint8_t * const data);
-static void byteUnpack32(const uint32_t data, uint8_t * const dest);
-static void byteUnpack32Signed(const int32_t data, uint8_t * const dest);
-static void byteUnpack16(uint16_t const data, uint8_t * const dest);
-static void byteUnpack16Signed(int16_t const data, uint8_t * const dest);
+static uint16_t RadarIQ_pack16Unsigned(const uint8_t * const data);
+static int16_t RadarIQ_pack16Signed(const uint8_t * const data);
+static void RadarIQ_unpack16Unsigned(uint16_t const data, uint8_t * const dest);
+static void RadarIQ_unpack16Signed(int16_t const data, uint8_t * const dest);
 
 //===============================================================================================//
 // GLOBAL-SCOPE FUNCTIONS
@@ -238,9 +233,7 @@ RadarIQCommand_t RadarIQ_readSerial(const RadarIQHandle_t obj)
 
 				if (RADARIQ_PACKET_FOOT == rxData.data)
 				{
-					bool success = RadarIQ_decodePacket(obj);
-
-					if (success)
+					if (RadarIQ_decodePacket(obj) == RADARIQ_RETURN_VAL_OK)
 					{
 						packet = RadarIQ_parsePacket(obj);
 					}
@@ -265,11 +258,11 @@ RadarIQCommand_t RadarIQ_readSerial(const RadarIQHandle_t obj)
 }
 
 /**
- * Reads data from the device UART using the provided callback and checks for a complete packet
+ * Gets a copy of the most recent data recieved from device
+ * Should be called immediately after a RADARIQ_CMD_PNT_CLOUD_FRAME or RADARIQ_CMD_OBJ_TRACKING_FRAME packet is returned from RadarIQ_readSerial()
  *
  * @param obj The RadarIQ object handle returned from RadarIQ_init()
- * 
- * @return A packet command value from RadarIQCommand_t, or negative value if none recieved or an error occured
+ * @param dest Pointer to a RadarIQData_t struct to copy the data into
  */ 
 void RadarIQ_getData(const RadarIQHandle_t obj, RadarIQData_t * dest)
 {
@@ -279,6 +272,15 @@ void RadarIQ_getData(const RadarIQHandle_t obj, RadarIQData_t * dest)
 	memcpy((void*)dest, (void*)&obj->data, sizeof(RadarIQData_t));
 }
 
+/**
+ * Gets a copy of the most recent statistics recieved from device
+ * Should be called immediately after a RADARIQ_CMD_PROC_STATS or RADARIQ_CMD_POINTCLOUD_STATS packet is returned from RadarIQ_readSerial()
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param processing Pointer to a RadarIQProcessingStats_t struct to copy the processing statistics into
+ * @param pointcloud Pointer to a RadarIQPointcloudStats_t struct to copy the point-cloud statistics into
+ * @param temperatures Pointer to a RadarIQChipTemperatures_t struct to copy the radar chip temperatures into
+ */ 
 void RadarIQ_getStatistics(const RadarIQHandle_t obj, RadarIQProcessingStats_t * const processing, 
 	RadarIQPointcloudStats_t * const pointcloud, RadarIQChipTemperatures_t * const temperatures)
 {
@@ -292,6 +294,14 @@ void RadarIQ_getStatistics(const RadarIQHandle_t obj, RadarIQProcessingStats_t *
 	*temperatures = obj->stats.temperature;	
 }
 
+/**
+ * Reads power-good flag from radar power supply which indicates whether it is regulating correctly
+ * Should be called immediately after a RADARIQ_CMD_POWER_STATUS packet is returned from RadarIQ_readSerial()
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ *
+ * @return True if radar power supply output is regulated ok, false otherwise
+ */ 
 bool RadarIQ_isPowerGood(const RadarIQHandle_t obj)
 {
 	radariq_assert(NULL != obj);
@@ -299,6 +309,13 @@ bool RadarIQ_isPowerGood(const RadarIQHandle_t obj)
 	return obj->isPowerGood;	
 }
 
+/**
+ * Gets a copy of the most recent processing statistics recieved from device
+ * Should be called immediately after a RADARIQ_CMD_PROC_STATS packet is returned from RadarIQ_readSerial()
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param dest Pointer to a RadarIQProcessingStats_t struct to copy the processing statistics into
+ */ 
 void RadarIQ_getProcessingStats(const RadarIQHandle_t obj, RadarIQProcessingStats_t * const dest)
 {
 	radariq_assert(NULL != obj);	
@@ -307,6 +324,13 @@ void RadarIQ_getProcessingStats(const RadarIQHandle_t obj, RadarIQProcessingStat
 	*dest = obj->stats.processing;
 }
 
+/**
+ * Gets a copy of the most recent point-cloud statistics recieved from device
+ * Should be called immediately after a RADARIQ_CMD_POINTCLOUD_STATS packet is returned from RadarIQ_readSerial()
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param dest Pointer to a RadarIQPointcloudStats_t struct to copy the point-cloud statistics into
+ */ 
 void RadarIQ_getPointCloudStats(const RadarIQHandle_t obj, RadarIQPointcloudStats_t * const dest)
 {
 	radariq_assert(NULL != obj);	
@@ -315,6 +339,13 @@ void RadarIQ_getPointCloudStats(const RadarIQHandle_t obj, RadarIQPointcloudStat
 	*dest = obj->stats.pointcloud;
 }
 
+/**
+ * Gets a copy of the most recent radar chip temperatures from device
+ * Should be called immediately after a RADARIQ_CMD_PROC_STATS packet is returned from RadarIQ_readSerial()
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param dest Pointer to a RadarIQChipTemperatures_t struct to copy the radar chip temperatures into
+ */ 
 void RadarIQ_getChipTemperatures(const RadarIQHandle_t obj, RadarIQChipTemperatures_t * const dest)
 {
 	radariq_assert(NULL != obj);	
@@ -327,11 +358,24 @@ void RadarIQ_getChipTemperatures(const RadarIQHandle_t obj, RadarIQChipTemperatu
 // GLOBAL-SCOPE FUNCTIONS - Debug / Info
 //===============================================================================================//
 
+/**
+ * Gets the total memory size requirements for one instance of a RadarIQ_t object in bytes
+ *
+ * @return The size of a single RadarIQ_t instance in bytes
+ */ 
 uint32_t RadarIQ_getMemoryUsage()
 {
 	return sizeof(RadarIQ_t);
 }
 
+/**
+ * Copies the current contents of the recieve packet buffer into a destination buffer
+ * WARNING: buffer must be of length RADARIQ_RX_BUFFER_SIZE or greater
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * 
+ * @return The current length of the packet in the buffer, or 0 if none is present
+ */ 
 uint8_t RadarIQ_getDataBuffer(const RadarIQHandle_t obj, uint8_t* dest)
 {
 	radariq_assert(NULL != obj);
@@ -341,11 +385,16 @@ uint8_t RadarIQ_getDataBuffer(const RadarIQHandle_t obj, uint8_t* dest)
 	return obj->rxPacket.len;
 }
 
-
 //===============================================================================================//
 // GLOBAL-SCOPE FUNCTIONS - UART Commands
 //===============================================================================================//
 
+/**
+ * Sends a RADARIQ_CMD_CAPTURE_START packet to the device to start radar data capture
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param numFrames The number of frames (1-255) to capture, or 0 for continuous capture
+ */
 void RadarIQ_start(const RadarIQHandle_t obj, const uint8_t numFrames)
 {
 	radariq_assert(NULL != obj);
@@ -358,6 +407,14 @@ void RadarIQ_start(const RadarIQHandle_t obj, const uint8_t numFrames)
 	RadarIQ_sendPacket(obj);
 }
 
+/**
+ * Sends a RADARIQ_CMD_RESET packet to the device to reset the device
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param code The type of reset - device reboot (RADARIQ_RESET_REBOOT) or factory settings reset (RADARIQ_RESET_FACTORY_SETTINGS)
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved
+ */
 RadarIQReturnVal_t RadarIQ_reset(const RadarIQHandle_t obj, const RadarIQResetCode_t code)
 {
 	radariq_assert(NULL != obj);
@@ -387,6 +444,13 @@ RadarIQReturnVal_t RadarIQ_reset(const RadarIQHandle_t obj, const RadarIQResetCo
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_SAVE packet to the device to save its current settings to EEPROM
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved
+ */
 RadarIQReturnVal_t RadarIQ_save(const RadarIQHandle_t obj)
 {
 	radariq_assert(NULL != obj);
@@ -407,6 +471,15 @@ RadarIQReturnVal_t RadarIQ_save(const RadarIQHandle_t obj)
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_VERSION packet to the device to get its hardware and firmware version numbers
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param firmware Pointer to a RadarIQVersion_t struct to copy the firmware version number into
+ * @param hardware Pointer to a RadarIQVersion_t struct to copy the hardware version number into
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved
+ */
 RadarIQReturnVal_t RadarIQ_getVersion(const RadarIQHandle_t obj, RadarIQVersion_t * const firmware, RadarIQVersion_t * const hardware)
 {
 	radariq_assert(NULL != obj);
@@ -434,17 +507,55 @@ RadarIQReturnVal_t RadarIQ_getVersion(const RadarIQHandle_t obj, RadarIQVersion_
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_IWR_VERSION packet to the device to get the firmware versions running on the IWR6843
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param sbl Pointer to a RadarIQVersionIWR_t struct to copy the secondary bootloader firmware version information into
+ * @param app1 Pointer to a RadarIQVersionIWR_t struct to copy the first application firmware version information into
+ * @param app2 Pointer to a RadarIQVersionIWR_t struct to copy the second application firmware version information into
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved
+ */
 RadarIQReturnVal_t RadarIQ_getRadarVersions(const RadarIQHandle_t obj, RadarIQVersionIWR_t * const sbl,
 		RadarIQVersionIWR_t * const app1, RadarIQVersionIWR_t * const app2)
 {
 	radariq_assert(NULL != obj);
+	radariq_assert(NULL != sbl);
+	radariq_assert(NULL != app1);
+	radariq_assert(NULL != app2);
 
 	RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
+	obj->txPacket.data[0] = RADARIQ_CMD_IWR_VERSION;
+	obj->txPacket.data[1] = RADARIQ_CMD_VAR_REQUEST;
+	obj->txPacket.len = 2u;
+
+	RadarIQ_sendPacket(obj);
+
+	if (RADARIQ_CMD_IWR_VERSION == RadarIQ_pollResponse(obj))
+	{	
+		memcpy((void*)sbl, (void*)&obj->rxPacket.data[2], 4);
+		memset(sbl->name, 0, 20);	
+		memcpy((void*)app1, (void*)&obj->rxPacket.data[6], sizeof(RadarIQVersionIWR_t));
+		memcpy((void*)app2, (void*)&obj->rxPacket.data[30], sizeof(RadarIQVersionIWR_t));
+	}
+	else
+	{
+		ret = RADARIQ_RETURN_VAL_ERR;
+	}
 
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_SERIAL packet to the device to read its serial number
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param serial Pointer to a RadarIQSerialNo_t struct to copy the serial number into
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved
+ */
 RadarIQReturnVal_t RadarIQ_getSerialNumber(const RadarIQHandle_t obj, RadarIQSerialNo_t * const serial)
 {
 	radariq_assert(NULL != obj);
@@ -469,6 +580,14 @@ RadarIQReturnVal_t RadarIQ_getSerialNumber(const RadarIQHandle_t obj, RadarIQSer
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_FRAME_RATE packet to the device to read the currently set capture frame rate
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param rate Pointer to a variable to copy the frame rate into
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved
+ */
 RadarIQReturnVal_t RadarIQ_getFrameRate(const RadarIQHandle_t obj, uint8_t * const rate)
 {
 	radariq_assert(NULL != obj);
@@ -493,6 +612,15 @@ RadarIQReturnVal_t RadarIQ_getFrameRate(const RadarIQHandle_t obj, uint8_t * con
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_FRAME_RATE packet to the device to set the capture frame rate
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param rate Frame rate to set in frames/second
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved,
+ * RADARIQ_RETURN_VAL_WARNING if provided frame rate was out of valid range and limited
+ */
 RadarIQReturnVal_t RadarIQ_setFrameRate(const RadarIQHandle_t obj, uint8_t rate)
 {
 	radariq_assert(NULL != obj);
@@ -525,6 +653,14 @@ RadarIQReturnVal_t RadarIQ_setFrameRate(const RadarIQHandle_t obj, uint8_t rate)
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_MODE packet to the device to read the currently set capture mode
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param mode Pointer to a RadarIQCaptureMode_t variable to copy the capture mode into
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved
+ */
 RadarIQReturnVal_t RadarIQ_getMode(const RadarIQHandle_t obj, RadarIQCaptureMode_t * const mode)
 {
 	radariq_assert(NULL != obj);
@@ -550,13 +686,21 @@ RadarIQReturnVal_t RadarIQ_getMode(const RadarIQHandle_t obj, RadarIQCaptureMode
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_MODE packet to the device to set the capture mode
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param mode The capture mode (RADARIQ_MODE_POINT_CLOUD or RADARIQ_MODE_OBJ_TRACKING) to set
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved or supplied mode is invalid
+ */
 RadarIQReturnVal_t RadarIQ_setMode(const RadarIQHandle_t obj, RadarIQCaptureMode_t mode)
 {
 	radariq_assert(NULL != obj);
 
 	RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
-	if ((RADARIQ_MODE_POINT_CLOUD > mode) || (RADARIQ_MODE_RAW_DATA < mode))
+	if ((RADARIQ_MODE_POINT_CLOUD > mode) || (RADARIQ_MODE_RAW_DATA < mode))	//TODO remove raw
 	{
 		ret = RADARIQ_RETURN_VAL_ERR;
 		return ret;	
@@ -577,6 +721,15 @@ RadarIQReturnVal_t RadarIQ_setMode(const RadarIQHandle_t obj, RadarIQCaptureMode
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_DIST_FILT packet to the device to read the current distance filter settings
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param min Pointer to a variable to copy the minimum distance setting into
+ * @param max Pointer to a variable to copy the maximum distance setting into
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved
+ */
 RadarIQReturnVal_t RadarIQ_getDistanceFilter(const RadarIQHandle_t obj, uint16_t * const min, uint16_t * const max)
 {
 	radariq_assert(NULL != obj);
@@ -593,8 +746,8 @@ RadarIQReturnVal_t RadarIQ_getDistanceFilter(const RadarIQHandle_t obj, uint16_t
 
 	if (RADARIQ_CMD_DIST_FILT == RadarIQ_pollResponse(obj))
 	{	
-		*min = bytePack16(&obj->rxPacket.data[2]);
-		*max = bytePack16(&obj->rxPacket.data[4]);
+		*min = RadarIQ_pack16Unsigned(&obj->rxPacket.data[2]);
+		*max = RadarIQ_pack16Unsigned(&obj->rxPacket.data[4]);
 	}
 	else
 	{
@@ -604,6 +757,16 @@ RadarIQReturnVal_t RadarIQ_getDistanceFilter(const RadarIQHandle_t obj, uint16_t
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_DIST_FILT packet to the device to set the distance filter settings
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param min The minimum distance setting into apply
+ * @param max The maximum distance setting into apply
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved,
+ * RADARIQ_RETURN_VAL_WARNING if provided min or max values were out of valid range and limited
+ */
 RadarIQReturnVal_t RadarIQ_setDistanceFilter(const RadarIQHandle_t obj, uint16_t min, uint16_t max)
 {
 	radariq_assert(NULL != obj);
@@ -631,8 +794,8 @@ RadarIQReturnVal_t RadarIQ_setDistanceFilter(const RadarIQHandle_t obj, uint16_t
 	
 	obj->txPacket.data[0] = RADARIQ_CMD_DIST_FILT;
 	obj->txPacket.data[1] = RADARIQ_CMD_VAR_SET;
-	byteUnpack16(min, &obj->txPacket.data[2]);
-	byteUnpack16(max, &obj->txPacket.data[4]);	
+	RadarIQ_unpack16Unsigned(min, &obj->txPacket.data[2]);
+	RadarIQ_unpack16Unsigned(max, &obj->txPacket.data[4]);	
 	obj->txPacket.len = 6u;
 	
 	RadarIQ_sendPacket(obj);
@@ -645,6 +808,15 @@ RadarIQReturnVal_t RadarIQ_setDistanceFilter(const RadarIQHandle_t obj, uint16_t
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_ANGLE_FILT packet to the device to read the current angle filter settings
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param min Pointer to a variable to copy the minimum angle setting into
+ * @param max Pointer to a variable to copy the maximum angle setting into
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved
+ */
 RadarIQReturnVal_t RadarIQ_getAngleFilter(const RadarIQHandle_t obj, int8_t * const min, int8_t * const max)
 {
 	radariq_assert(NULL != obj);
@@ -670,6 +842,16 @@ RadarIQReturnVal_t RadarIQ_getAngleFilter(const RadarIQHandle_t obj, int8_t * co
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_ANGLE_FILT packet to the device to set the angle filter settings
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param min The minimum angle setting into apply
+ * @param max The maximum angle setting into apply
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved,
+ * RADARIQ_RETURN_VAL_WARNING if provided min or max values were out of valid range and limited
+ */
 RadarIQReturnVal_t RadarIQ_setAngleFilter(const RadarIQHandle_t obj, int8_t min, int8_t max)
 {
 	radariq_assert(NULL != obj);
@@ -720,6 +902,14 @@ RadarIQReturnVal_t RadarIQ_setAngleFilter(const RadarIQHandle_t obj, int8_t min,
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_MOVING_FILT packet to the device to read the current moving filter setting
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param filter Pointer to a RadarIQMovingFilterMode_t variable to copy the filter setting into
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved
+ */
 RadarIQReturnVal_t RadarIQ_getMovingFilter(const RadarIQHandle_t obj, RadarIQMovingFilterMode_t * const filter)
 {
 	radariq_assert(NULL != obj);
@@ -744,6 +934,15 @@ RadarIQReturnVal_t RadarIQ_getMovingFilter(const RadarIQHandle_t obj, RadarIQMov
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_MOVING_FILT packet to the device to set the moving filter setting
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param filter The moving filter setting to apply
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved 
+ * or supplied filter setting provided is invalid
+ */
 RadarIQReturnVal_t RadarIQ_setMovingFilter(const RadarIQHandle_t obj, RadarIQMovingFilterMode_t filter)
 {
 	radariq_assert(NULL != obj);
@@ -771,6 +970,14 @@ RadarIQReturnVal_t RadarIQ_setMovingFilter(const RadarIQHandle_t obj, RadarIQMov
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_PNT_DENSITY packet to the device to read the current point-cloud point density setting
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param density Pointer to a RadarIQPointDensity_t variable to copy the point density setting into
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved
+ */
 RadarIQReturnVal_t RadarIQ_getPointDensity(const RadarIQHandle_t obj, RadarIQPointDensity_t * const density)
 {
 	radariq_assert(NULL != obj);
@@ -795,6 +1002,14 @@ RadarIQReturnVal_t RadarIQ_getPointDensity(const RadarIQHandle_t obj, RadarIQPoi
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_PNT_DENSITY packet to the device to set the point-cloud point density
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param density The point density setting to apply
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved
+ */
 RadarIQReturnVal_t RadarIQ_setPointDensity(const RadarIQHandle_t obj, RadarIQPointDensity_t density)
 {
 	radariq_assert(NULL != obj);
@@ -822,6 +1037,14 @@ RadarIQReturnVal_t RadarIQ_setPointDensity(const RadarIQHandle_t obj, RadarIQPoi
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_CERTAINTY packet to the device to read the current point-cloud certainty level
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param certainty Pointer to a variable to copy the certainty level into
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved
+ */
 RadarIQReturnVal_t RadarIQ_getCertainty(const RadarIQHandle_t obj, uint8_t * const certainty)
 {
 	radariq_assert(NULL != obj);
@@ -846,6 +1069,14 @@ RadarIQReturnVal_t RadarIQ_getCertainty(const RadarIQHandle_t obj, uint8_t * con
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_CERTAINTY packet to the device to set the point-cloud certainty level
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param certainty The certainty level (0-9) to set
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved
+ */
 RadarIQReturnVal_t RadarIQ_setCertainty(const RadarIQHandle_t obj, uint8_t certainty)
 {
 	radariq_assert(NULL != obj);
@@ -873,6 +1104,15 @@ RadarIQReturnVal_t RadarIQ_setCertainty(const RadarIQHandle_t obj, uint8_t certa
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_HEIGHT_FILT packet to the device to read the current height filter settings
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param min Pointer to a variable to copy the minimum height setting into
+ * @param max Pointer to a variable to copy the maximum height setting into
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved
+ */
 RadarIQReturnVal_t RadarIQ_getHeightFilter(const RadarIQHandle_t obj, int16_t * const min, int16_t * const max)
 {
 	radariq_assert(NULL != obj);
@@ -887,8 +1127,8 @@ RadarIQReturnVal_t RadarIQ_getHeightFilter(const RadarIQHandle_t obj, int16_t * 
 
 	if (RADARIQ_CMD_HEIGHT_FILT == RadarIQ_pollResponse(obj))
 	{	
-		*min = bytePack16Signed(&obj->rxPacket.data[2]);
-		*max = bytePack16Signed(&obj->rxPacket.data[4]);
+		*min = RadarIQ_pack16Signed(&obj->rxPacket.data[2]);
+		*max = RadarIQ_pack16Signed(&obj->rxPacket.data[4]);
 	}
 	else
 	{
@@ -898,6 +1138,15 @@ RadarIQReturnVal_t RadarIQ_getHeightFilter(const RadarIQHandle_t obj, int16_t * 
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_HEIGHT_FILT packet to the device to set the height filter settings
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param min The minimum height setting into apply
+ * @param max The minimum height setting into apply
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved
+ */
 RadarIQReturnVal_t RadarIQ_setHeightFilter(const RadarIQHandle_t obj, int16_t min, int16_t max)
 {
 	radariq_assert(NULL != obj);
@@ -913,8 +1162,8 @@ RadarIQReturnVal_t RadarIQ_setHeightFilter(const RadarIQHandle_t obj, int16_t mi
 	
 	obj->txPacket.data[0] = RADARIQ_CMD_HEIGHT_FILT;
 	obj->txPacket.data[1] = RADARIQ_CMD_VAR_SET;
-	byteUnpack16Signed(min, &obj->txPacket.data[2]);
-	byteUnpack16Signed(max, &obj->txPacket.data[4]);	
+	RadarIQ_unpack16Signed(min, &obj->txPacket.data[2]);
+	RadarIQ_unpack16Signed(max, &obj->txPacket.data[4]);	
 	obj->txPacket.len = 6u;
 	
 	RadarIQ_sendPacket(obj);
@@ -927,6 +1176,13 @@ RadarIQReturnVal_t RadarIQ_setHeightFilter(const RadarIQHandle_t obj, int16_t mi
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_SCENE_CALIB packet to the device to perform a scene calibration
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved
+ */
 RadarIQReturnVal_t RadarIQ_sceneCalibrate(const RadarIQHandle_t obj)
 {
 	radariq_assert(NULL != obj);
@@ -953,6 +1209,14 @@ RadarIQReturnVal_t RadarIQ_sceneCalibrate(const RadarIQHandle_t obj)
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_OBJECT_SIZE packet to the device to read the current target object size for tracking
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param size Pointer to a variable to copy the target object size into
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved
+ */
 RadarIQReturnVal_t RadarIQ_getObjectSize(const RadarIQHandle_t obj, uint8_t * const size)
 {
 	radariq_assert(NULL != obj);
@@ -977,6 +1241,15 @@ RadarIQReturnVal_t RadarIQ_getObjectSize(const RadarIQHandle_t obj, uint8_t * co
 	return ret;
 }
 
+/**
+ * Sends a RADARIQ_CMD_OBJECT_SIZE packet to the device to set the target object size for tracking
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param size The target object size (0-4) to set
+ * 
+ * @return RADARIQ_RETURN_VAL_OK on success, RADARIQ_RETURN_VAL_ERR if no valid response was recieved,
+ * RADARIQ_RETURN_VAL_WARNING if provided value was out of valid range and limited
+ */
 RadarIQReturnVal_t RadarIQ_setObjectSize(const RadarIQHandle_t obj, uint8_t size)
 {
 	radariq_assert(NULL != obj);
@@ -1008,6 +1281,14 @@ RadarIQReturnVal_t RadarIQ_setObjectSize(const RadarIQHandle_t obj, uint8_t size
 // FILE-SCOPE FUNCTIONS - Packet Parsing
 //===============================================================================================//
 
+/**
+ * Polls for a response from the device UART
+ * Function will block until a valid packet is recieved or a timeout of 1 second is reached
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * 
+ * @return A packet command value from RadarIQCommand_t, or negative value if none recieved or an error occured
+ */
 static RadarIQCommand_t RadarIQ_pollResponse(const RadarIQHandle_t obj)
 {
 	radariq_assert(NULL != obj);
@@ -1016,8 +1297,6 @@ static RadarIQCommand_t RadarIQ_pollResponse(const RadarIQHandle_t obj)
 
     int64_t startTime = (int64_t)radariq_get_mseconds;
     char strMsg[32]; 
-    //sprintf(strMsg, "pollResponse: start time = %i", startTime);
-    //obj->logCallback(strMsg);
 	
 	do
 	{		
@@ -1040,6 +1319,13 @@ static RadarIQCommand_t RadarIQ_pollResponse(const RadarIQHandle_t obj)
 	return response;
 }
 
+/**
+ * Parses a packet recieved from the device UART
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * 
+ * @return A packet command value from RadarIQCommand_t, or negative value if an error occured
+ */
 static RadarIQCommand_t RadarIQ_parsePacket(const RadarIQHandle_t obj)
 {
 	radariq_assert(NULL != obj);
@@ -1077,7 +1363,7 @@ static RadarIQCommand_t RadarIQ_parsePacket(const RadarIQHandle_t obj)
 	case RADARIQ_CMD_PNT_CLOUD_FRAME:
 	{
 		//obj->logCallback("parsePacket: Point Cloud");
-		ret = RadarIQ_parsePointCloud(obj);
+		RadarIQ_parsePointCloud(obj);
 		break;
 	}
 	case RADARIQ_CMD_OBJ_TRACKING_FRAME:
@@ -1115,7 +1401,12 @@ static RadarIQCommand_t RadarIQ_parsePacket(const RadarIQHandle_t obj)
 	return ret;
 }
 
-static RadarIQCommand_t RadarIQ_parsePointCloud(const RadarIQHandle_t obj)
+/**
+ * Parses a point-cloud packet recieved from the device UART
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ */
+static void RadarIQ_parsePointCloud(const RadarIQHandle_t obj)
 {
   RadarIQCommand_t ret = RADARIQ_CMD_NONE;
   
@@ -1131,22 +1422,16 @@ static RadarIQCommand_t RadarIQ_parsePointCloud(const RadarIQHandle_t obj)
 	uint8_t pointNum;
 	for (pointNum = 0u; pointNum < pointCount; pointNum++)
 	{
-        obj->data.pointCloud.points[obj->numDataPoints].x = bytePack16Signed(&obj->rxPacket.data[packetIdx]);
+        obj->data.pointCloud.points[obj->numDataPoints].x = RadarIQ_pack16Signed(&obj->rxPacket.data[packetIdx]);
 		packetIdx += 2u;
-        //sprintf(buff, "x = %i\n", obj->data.pointCloud.points[obj->numDataPoints].x);
-        //obj->logCallback(buff);
-		obj->data.pointCloud.points[obj->numDataPoints].y = bytePack16Signed(&obj->rxPacket.data[packetIdx]);
+		obj->data.pointCloud.points[obj->numDataPoints].y = RadarIQ_pack16Signed(&obj->rxPacket.data[packetIdx]);
         packetIdx += 2u;
-        obj->data.pointCloud.points[obj->numDataPoints].z = bytePack16Signed(&obj->rxPacket.data[packetIdx]);
+        obj->data.pointCloud.points[obj->numDataPoints].z = RadarIQ_pack16Signed(&obj->rxPacket.data[packetIdx]);
         packetIdx += 2u;
         obj->data.pointCloud.points[obj->numDataPoints].intensity = obj->rxPacket.data[packetIdx];
         packetIdx++;
-        obj->data.pointCloud.points[obj->numDataPoints].velocity = bytePack16Signed(&obj->rxPacket.data[packetIdx]);
+        obj->data.pointCloud.points[obj->numDataPoints].velocity = RadarIQ_pack16Signed(&obj->rxPacket.data[packetIdx]);
         packetIdx += 2u;
-
-        //memcpy((void*)&obj->data.pointCloud.points[obj->numDataPoints], &obj->rxPacket.data[packetIdx], 9);
-        //packetIdx += 9u;
-
 		obj->numDataPoints++;
 		obj->data.pointCloud.numPoints = obj->numDataPoints;
 		if (RADARIQ_MAX_POINTCLOUD < (obj->numDataPoints + 1u))
@@ -1166,13 +1451,14 @@ static RadarIQCommand_t RadarIQ_parsePointCloud(const RadarIQHandle_t obj)
 		{
 			obj->data.pointCloud.isFrameComplete = true;
 		}
-
-    	ret = RADARIQ_CMD_PNT_CLOUD_FRAME;
 	}
-
-  return ret;
 }
 
+/**
+ * Parses a object-tracking packet recieved from the device UART
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ */
 static void RadarIQ_parseObjectTracking(const RadarIQHandle_t obj)
 {
 	const RadarIQSubframe_t subFrameType = (RadarIQSubframe_t)obj->rxPacket.data[2];
@@ -1187,23 +1473,23 @@ static void RadarIQ_parseObjectTracking(const RadarIQHandle_t obj)
 	{
 		obj->data.objectTracking.objects[obj->numDataPoints].targetId = obj->rxPacket.data[packetIdx];
 		packetIdx++;
-		obj->data.objectTracking.objects[obj->numDataPoints].xPos = bytePack16Signed(&obj->rxPacket.data[packetIdx]);
+		obj->data.objectTracking.objects[obj->numDataPoints].xPos = RadarIQ_pack16Signed(&obj->rxPacket.data[packetIdx]);
 		packetIdx += 2u;
-		obj->data.objectTracking.objects[obj->numDataPoints].yPos = bytePack16Signed(&obj->rxPacket.data[packetIdx]);
+		obj->data.objectTracking.objects[obj->numDataPoints].yPos = RadarIQ_pack16Signed(&obj->rxPacket.data[packetIdx]);
 		packetIdx += 2u;
-		obj->data.objectTracking.objects[obj->numDataPoints].zPos = bytePack16Signed(&obj->rxPacket.data[packetIdx]);
+		obj->data.objectTracking.objects[obj->numDataPoints].zPos = RadarIQ_pack16Signed(&obj->rxPacket.data[packetIdx]);
 		packetIdx += 2u;
-		obj->data.objectTracking.objects[obj->numDataPoints].xVel = bytePack16Signed(&obj->rxPacket.data[packetIdx]);
+		obj->data.objectTracking.objects[obj->numDataPoints].xVel = RadarIQ_pack16Signed(&obj->rxPacket.data[packetIdx]);
 		packetIdx += 2u;
-		obj->data.objectTracking.objects[obj->numDataPoints].yVel = bytePack16Signed(&obj->rxPacket.data[packetIdx]);
+		obj->data.objectTracking.objects[obj->numDataPoints].yVel = RadarIQ_pack16Signed(&obj->rxPacket.data[packetIdx]);
 		packetIdx += 2u;
-		obj->data.objectTracking.objects[obj->numDataPoints].zVel = bytePack16Signed(&obj->rxPacket.data[packetIdx]);
+		obj->data.objectTracking.objects[obj->numDataPoints].zVel = RadarIQ_pack16Signed(&obj->rxPacket.data[packetIdx]);
 		packetIdx += 2u;
-		obj->data.objectTracking.objects[obj->numDataPoints].xAcc = bytePack16Signed(&obj->rxPacket.data[packetIdx]);
+		obj->data.objectTracking.objects[obj->numDataPoints].xAcc = RadarIQ_pack16Signed(&obj->rxPacket.data[packetIdx]);
 		packetIdx += 2u;
-		obj->data.objectTracking.objects[obj->numDataPoints].yAcc = bytePack16Signed(&obj->rxPacket.data[packetIdx]);
+		obj->data.objectTracking.objects[obj->numDataPoints].yAcc = RadarIQ_pack16Signed(&obj->rxPacket.data[packetIdx]);
 		packetIdx += 2u;
-		obj->data.objectTracking.objects[obj->numDataPoints].zAcc = bytePack16Signed(&obj->rxPacket.data[packetIdx]);
+		obj->data.objectTracking.objects[obj->numDataPoints].zAcc = RadarIQ_pack16Signed(&obj->rxPacket.data[packetIdx]);
 		packetIdx += 2u;
 
 		obj->numDataPoints++;
@@ -1228,6 +1514,11 @@ static void RadarIQ_parseObjectTracking(const RadarIQHandle_t obj)
 	}
 }
 
+/**
+ * Parses a message packet recieved from the device UART
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ */
 static void RadarIQ_parseMessage(const RadarIQHandle_t obj)
 {
 	radariq_assert(NULL != obj);
@@ -1260,9 +1551,15 @@ static void RadarIQ_parseMessage(const RadarIQHandle_t obj)
 	}
 	
 	snprintf(strLog, sizeof(strLog), "Radar Message - %s (%u):, %s", strMsgType, obj->rxPacket.data[3], (char*)&obj->rxPacket.data[4]);
+	strLog[255] = 0;
 	obj->logCallback(strLog);
 }
 
+/**
+ * Parses a processing statistics packet recieved from the device UART
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ */
 static void RadarIQ_parseProcessingStats(const RadarIQHandle_t obj)
 {
 	radariq_assert(NULL != obj);
@@ -1271,6 +1568,11 @@ static void RadarIQ_parseProcessingStats(const RadarIQHandle_t obj)
 	memcpy((void*)&obj->stats.temperature, (void*)&obj->rxPacket.data[30], 20);
 }
 
+/**
+ * Parses a point-cloud statistics packet recieved from the device UART
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ */
 static void RadarIQ_parsePointCloudStats(const RadarIQHandle_t obj)
 {
 	radariq_assert(NULL != obj);
@@ -1278,6 +1580,11 @@ static void RadarIQ_parsePointCloudStats(const RadarIQHandle_t obj)
 	memcpy((void*)&obj->stats.pointcloud, (void*)&obj->rxPacket.data[2], 26);	
 }
 
+/**
+ * Parses a power status packet recieved from the device UART
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ */
 static void RadarIQ_parsePowerStatus(const RadarIQHandle_t obj)
 {
 	radariq_assert(NULL != obj);
@@ -1285,12 +1592,17 @@ static void RadarIQ_parsePowerStatus(const RadarIQHandle_t obj)
 	obj->isPowerGood = !obj->rxPacket.data[2];
 }
 
+/**
+ * Sends a packet to the device over UART
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ */
 static void RadarIQ_sendPacket(const RadarIQHandle_t obj)
 {
 	radariq_assert(NULL != obj);
 
 	// Calculate CRC
-	uint16_t const crc = getCrc16Ccitt(obj->txPacket.data, obj->txPacket.len);
+	uint16_t const crc = RadarIQ_getCrc16Ccitt(obj->txPacket.data, obj->txPacket.len);
 
 	// Send packet header
 	obj->txBuffer.data[0] = RADARIQ_PACKET_HEAD;
@@ -1299,11 +1611,11 @@ static void RadarIQ_sendPacket(const RadarIQHandle_t obj)
 	// Loop through data, check for footer bytes in data and escape them
 	for (uint8_t idx = 0u; idx < obj->txPacket.len; idx++)
 	{
-		encodeHelper(obj, obj->txPacket.data[idx]);
+		RadarIQ_encodeHelper(obj, obj->txPacket.data[idx]);
 	}
 
-	encodeHelper(obj, (uint8_t)((crc & (uint16_t)0xFF00) >> 8u));
-	encodeHelper(obj, (uint8_t)(crc & (uint16_t)0x00FF));
+	RadarIQ_encodeHelper(obj, (uint8_t)((crc & (uint16_t)0xFF00) >> 8u));
+	RadarIQ_encodeHelper(obj, (uint8_t)(crc & (uint16_t)0x00FF));
 
 	// Insert footer
 	obj->txBuffer.data[obj->txBuffer.len] = RADARIQ_PACKET_FOOT;
@@ -1312,7 +1624,14 @@ static void RadarIQ_sendPacket(const RadarIQHandle_t obj)
 	obj->sendSerialDataCallback(obj->txBuffer.data, obj->txBuffer.len);
 }
 
-static bool RadarIQ_decodePacket(const RadarIQHandle_t obj)
+/**
+ * Decodes a packet recieved from the device over UART
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * 
+ * @return RADARIQ_RETURN_VAL_OK if packet CRC check is ok, RADARIQ_RETURN_VAL_ERR otherwise
+ */
+static RadarIQReturnVal_t RadarIQ_decodePacket(const RadarIQHandle_t obj)
 {
 	radariq_assert(NULL != obj);
 
@@ -1348,17 +1667,30 @@ static bool RadarIQ_decodePacket(const RadarIQHandle_t obj)
 		}
 	}
 
-	// Calculates crc from decoded packet (crc calc does not include header, footer, or crc bytes)
-	uint16_t const crc = getCrc16Ccitt(obj->rxPacket.data, obj->rxPacket.len - 2u);
+	// Calculate crc from decoded packet (crc calc does not include header, footer, or crc bytes)
+	uint16_t const crc = RadarIQ_getCrc16Ccitt(obj->rxPacket.data, obj->rxPacket.len - 2u);
 
-	// Gets crc from the packet after it has been decoded
+	// Get crc from the packet after it has been decoded
 	uint16_t const rxCrc = (uint16_t) ( (*(obj->rxPacket.data + obj->rxPacket.len - 2u) & (uint16_t)0xFF) << 8u) |
 			(*(obj->rxPacket.data + obj->rxPacket.len - 1u) & (uint16_t)0xFF);
 
-	return (crc == rxCrc);
+	RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_ERR;
+
+	if (crc == rxCrc)
+	{
+		RADARIQ_RETURN_VAL_OK;
+	}
+
+	return ret;
 }
 
-static void encodeHelper(const RadarIQHandle_t obj, uint8_t const databyte)
+/**
+ * Encodes a byte into a packet to send to the device over UART
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param databyte The data byte to encode
+ */
+static void RadarIQ_encodeHelper(const RadarIQHandle_t obj, uint8_t const databyte)
 {
 	radariq_assert(obj->txBuffer.len < (RADARIQ_TX_BUFFER_SIZE - 2u));
 
@@ -1402,7 +1734,16 @@ static void encodeHelper(const RadarIQHandle_t obj, uint8_t const databyte)
 	}
 }
 
-static uint16_t getCrc16Ccitt(uint8_t const * array, uint8_t len)
+/**
+ * Calculates the 16-bit CRC of an array
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param array The array to calculate the CRC for
+ * @param len The length of the arrey in bytes
+ * 
+ * @return The calculated CRC value
+ */
+static uint16_t RadarIQ_getCrc16Ccitt(uint8_t const * array, uint8_t len)
 {
     uint8_t x;
     uint16_t crc = (uint16_t)0xFFFFu;
@@ -1421,18 +1762,14 @@ static uint16_t getCrc16Ccitt(uint8_t const * array, uint8_t len)
 // FILE-SCOPE FUNCTIONS - Byte Helpers
 //===============================================================================================//
 
-static uint32_t bytePack32(const uint8_t * const data)
-{
-    uint32_t dest = 0u;
-    dest |= (((uint32_t)data[3] << 24u) & 0xFF000000u);
-    dest |= (((uint32_t)data[2] << 16u) & 0x00FF0000u);
-    dest |= (((uint32_t)data[1] << 8u) & 0x0000FF00u);
-    dest |= (((uint32_t)data[0]) & 0x000000FFu);
-
-    return dest;
-}
-
-static uint16_t bytePack16(const uint8_t * const data)
+/**
+ * Packs 2-bytes of a buffer into an unsigned 16-bit integer
+ *
+ * @param data The buffer data bytes to pack
+ * 
+ * @return The packed integer value
+ */
+static uint16_t RadarIQ_pack16Unsigned(const uint8_t * const data)
 {
     uint16_t dest = 0u;
     dest |= (((uint32_t)data[1] << 8u) & 0xFF00u);
@@ -1441,7 +1778,14 @@ static uint16_t bytePack16(const uint8_t * const data)
     return dest;
 }
 
-static int16_t bytePack16Signed(const uint8_t * const data)
+/**
+ * Packs 2-bytes of a buffer into a signed 16-bit integer
+ *
+ * @param data The buffer data bytes to pack
+ * 
+ * @return The packed integer value
+ */
+static int16_t RadarIQ_pack16Signed(const uint8_t * const data)
 {
     uint16_t temp = 0u;
     int16_t returnValue = 0;
@@ -1454,53 +1798,31 @@ static int16_t bytePack16Signed(const uint8_t * const data)
     return returnValue;
 }
 
-static void byteUnpack32(const uint32_t data, uint8_t * const dest)
-{
-	dest[3] = (data >> 24u) & 0xFFu;
-	dest[2] = (data >> 16u) & 0xFFu;
-	dest[1] = (data >> 8u) & 0xFFu;
-	dest[0] = data & 0xFFu;
-}
-
-static void byteUnpack32Signed(const int32_t data, uint8_t * const dest)
-{
-    uint32_t temp = 0u;
-    memcpy(&temp, &data, sizeof(int32_t));
-
-	dest[3] = (temp >> 24u) & 0xFFu;
-	dest[2] = (temp >> 16u) & 0xFFu;
-	dest[1] = (temp >> 8u) & 0xFFu;
-	dest[0] = temp & 0xFFu;
-}
-
-static void byteUnpack16(uint16_t const data, uint8_t * const dest)
+/**
+ * Unpacks an unsigned 16-bit integer into a 2-byte buffer
+ *
+ * @param data The integer value to unpack
+ * @param dest The buffer to unpack the data byte into
+ */
+static void RadarIQ_unpack16Unsigned(uint16_t const data, uint8_t * const dest)
 {
 	dest[1] = (data >> 8u) & 0xFFu;
 	dest[0] = data & 0xFFu;
 }
 
-static void byteUnpack16Signed(int16_t const data, uint8_t * const dest)
+/**
+ * Unpacks a signed 16-bit integer into a 2-byte buffer
+ *
+ * @param data The integer value to unpack
+ * @param dest The buffer to unpack the data byte into
+ */
+static void RadarIQ_unpack16Signed(int16_t const data, uint8_t * const dest)
 {
     uint16_t temp = 0u;
     memcpy(&temp, &data, sizeof(uint16_t));
 
 	dest[1] = (temp >> 8u) & 0xFFu;
 	dest[0] = temp & 0xFFu;
-}
-
-static int32_t bytePack32Signed(const uint8_t * const data)
-{
-    uint32_t temp = 0u;
-    int32_t returnValue = 0;
-
-    temp |= (((uint32_t)data[3] << 24u) & 0xFF000000u);
-    temp |= (((uint32_t)data[2] << 16u) & 0x00FF0000u);
-    temp |= (((uint32_t)data[1] << 8u) & 0x0000FF00u);
-    temp |= (((uint32_t)data[0]) & 0x000000FFu);
-
-    memcpy(&returnValue, &temp, sizeof(uint16_t));
-
-    return returnValue;
 }
 
 /* [] END OF FILE */

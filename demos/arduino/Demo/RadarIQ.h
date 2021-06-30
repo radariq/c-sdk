@@ -59,7 +59,7 @@ extern "C" {
  * Redefine the function as needed to operate on your platform and include any necessary header files below
  */
 #include <Arduino.h>
-#define radariq_get_mseconds			millis()
+#define radariq_get_mseconds			millis()	//TODO use a callback instead?
 
 //===============================================================================================//
 // DATA TYPES

@@ -125,7 +125,7 @@ var demos_2arduino_2_demo_2_radar_i_q_8h =
     [ "RadarIQ_getAngleFilter", "demos_2arduino_2_demo_2_radar_i_q_8h.html#a7834f253c39273b7cf480b4977d7b268", null ],
     [ "RadarIQ_getCertainty", "demos_2arduino_2_demo_2_radar_i_q_8h.html#a1853e2637c110d704bc873d1ca93d1b4", null ],
     [ "RadarIQ_getChipTemperatures", "demos_2arduino_2_demo_2_radar_i_q_8h.html#a649b02831e5299d81638c8d097493c39", null ],
-    [ "RadarIQ_getData", "demos_2arduino_2_demo_2_radar_i_q_8h.html#a42b4272a5e3ae064373912c383f38c3a", null ],
+    [ "RadarIQ_getData", "demos_2arduino_2_demo_2_radar_i_q_8h.html#a2cb326471b57bd2fcb94912d41f05b6e", null ],
     [ "RadarIQ_getDataBuffer", "demos_2arduino_2_demo_2_radar_i_q_8h.html#aff2d12b19597252d766b788c63d3526d", null ],
     [ "RadarIQ_getDistanceFilter", "demos_2arduino_2_demo_2_radar_i_q_8h.html#a8fbbe20ae09efc90dc675424fb52e571", null ],
     [ "RadarIQ_getFrameRate", "demos_2arduino_2_demo_2_radar_i_q_8h.html#a223f5b4a9f65f7df3c54b02635a9c6f7", null ],
