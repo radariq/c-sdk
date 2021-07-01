@@ -1,18 +1,18 @@
-//------------------------------------------------------------------------------
-//                                                                            --
-//                                RadarIQ                                     --
-//                         C-SDK Demo Application                             --
-//                                                                            --
-//                   (C) 2021 RadarIQ <support@radariq.io>                    --
-//                                                                            --
-//                            License: MIT                                    --
-//                                                                            --
-//------------------------------------------------------------------------------ 
+/**
+ * @example demos/mbed/main.c
+ * Example program using the mbed tool chain.
+ * Example application demonstrating the capabilities of the RadarIQ sensor.
+ *
+ * @copyright Copyright (C) 2021 RadarIQ
+ *            Licensed under the MIT license
+ *
+ * @author RadarIQ Ltd
+ */        
 
 
 //------------------------------------------------------------------------------
 // Includes
-//----------
+//------------------------------------------------------------------------------
 
 #include "mbed.h"
 #include "RadarIQ.h"
@@ -163,22 +163,22 @@ int main()
         printf("* Error setting height filter of RadarIQ module\n\r");  
     }
     
-    // Set certainty level
-    if (RadarIQ_setCertainty(myRadar, 6u) == RADARIQ_RETURN_VAL_OK)
+    // Set sensitivity level
+    if (RadarIQ_setSensitivity(myRadar, 6u) == RADARIQ_RETURN_VAL_OK)
     {
-        uint8_t certainty;
-        if (RadarIQ_getCertainty(myRadar, &certainty) == RADARIQ_RETURN_VAL_OK)
+        uint8_t sensitivity;
+        if (RadarIQ_getSensitivity(myRadar, &sensitivity) == RADARIQ_RETURN_VAL_OK)
         {
-            printf("* Certainty level is set to: %u\n\r", certainty);   
+            printf("* Sensitivity level is set to: %u\n\r", sensitivity);   
         }
         else
         {
-            printf("* Error reading certainty level from RadarIQ module\n\r");  
+            printf("* Error reading sensitivity level from RadarIQ module\n\r");  
         }
     }
     else
     {
-        printf("* Error setting certainty level of RadarIQ module\n\r");  
+        printf("* Error setting sensitivity level of RadarIQ module\n\r");  
     }
     
     // Set moving filter option
