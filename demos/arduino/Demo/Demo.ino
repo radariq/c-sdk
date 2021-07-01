@@ -1,13 +1,14 @@
-//------------------------------------------------------------------------------
-//                                                                            --
-//                                RadarIQ                                     --                                         
-//                       C-SDK Demo Application 2021                          --
-//                                                                            --
-//------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+//                                                                            				           --
+//                             			RadarIQ C-SDK Demo Application                               --
+//                                         'Backing Sensor'                                 	   --
+//                   		        (C) 2021 RadarIQ <support@radariq.io>                    			   --
+//                                                                            					         --
+//                            			        License: MIT                                    	   --
+//                                                                            					         --
+//------------------------------------------------------------------------------------------------- 
 
-#define __ASSERT_USE_STDERR
-
-//------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 // Includes
 //----------
 
@@ -15,48 +16,48 @@
 #include <Arduino.h>
 #include "RadarIQ.h"
 
-//------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+// Defines
+//----------
+
+#define __ASSERT_USE_STDERR
+
+#define RADAR_FRAME_RATE   2u
+
+//-------------------------------------------------------------------------------------------------
 // Objects
 //---------
 
 static RadarIQHandle_t myRadar;
 
-//------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 // Function Prototypes
 //---------------------
 
 static void callbackSendRadarData(uint8_t * const buffer, const uint16_t len);
 static RadarIQUartData_t callbackReadSerialData(void);
 static void callbackRadarLog(char * const buffer);
+static uint32_t callbackMillis(void);
 
-//------------------------------------------------------------------------------
-// Program Entry Point
-//------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+// Setup Function
+//-------------------------------------------------------------------------------------------------
 
 void setup()
 {
+  // Setup the on-board LED
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
 
-  noInterrupts();           // disable all interrupts
+  // Setup serial ports
+  Serial.begin(115200);   // PC USB debug
+  Serial1.begin(115200);  // RadarIQ device
 
-  TCCR1A = 0;
-  TCCR1B = 0;
-  TCNT1  = 0;
-  OCR1A = 11000;            // compare match register 16MHz/256/2Hz
-  TCCR1B |= (1 << WGM12);   // CTC mode
-  TCCR1B |= (1 << CS12);
-  TCCR1B |= (1 << CS10);
-
-  interrupts();             // enable all interrupts
-  
-  Serial.begin(115200);   // PC debug serial port
-  Serial1.begin(115200);  // RadarIQ device serial port
-
+  // Create buffer for debug printing
   char buffer[128];
 
   // Create the RadarIQ object
-  myRadar = RadarIQ_init(callbackSendRadarData, callbackReadSerialData, callbackRadarLog);
+  myRadar = RadarIQ_init(callbackSendRadarData, callbackReadSerialData, callbackRadarLog, callbackMillis);
   sprintf(buffer, "* Created RadarIQ instance, using %u bytes of memory\n\r", RadarIQ_getMemoryUsage());
   Serial.print(buffer);
 
@@ -86,7 +87,7 @@ void setup()
   }
   
   // Set frame rate
-  if (RadarIQ_setFrameRate(myRadar, 2u) == RADARIQ_RETURN_VAL_OK)
+  if (RadarIQ_setFrameRate(myRadar, RADAR_FRAME_RATE) == RADARIQ_RETURN_VAL_OK)
   {
     uint8_t frameRate;
     if (RadarIQ_getFrameRate(myRadar, &frameRate) == RADARIQ_RETURN_VAL_OK)
@@ -244,11 +245,17 @@ void setup()
   RadarIQ_start(myRadar, 0);
 }
 
-char buffer[512];
+//-------------------------------------------------------------------------------------------------
+// Loop Function
+//-------------------------------------------------------------------------------------------------
 
 void loop()
 {
-  static int16_t yMin = 10000;
+  char buffer[256];                       // Buffer for debug printing
+  static int16_t yMin = 9999;             // Nearest detected point distance from radar
+  static int32_t ledPeriod = -1;          // LED blinking period in milliseconds
+  static int32_t ledLastToggleTime = 0;   // Last time the LED was toggled in milliseconds
+  static int32_t radarLastFrameTime = 0;  // Last time a point-cloud frame was recieved in millisecons
 
   // Process the serial data
   RadarIQCommand_t packet = RadarIQ_readSerial(myRadar);
@@ -259,100 +266,61 @@ void loop()
     // Pointcloud frame
     case RADARIQ_CMD_PNT_CLOUD_FRAME:
     {
+      // Initialise nearest point value to something out of range
+      yMin = 9999;
+
+      // Record time of frame recieved
+      radarLastFrameTime = millis();
+
       RadarIQData_t radarData;
       RadarIQ_getData(myRadar, &radarData);
-      
-      sprintf(buffer, "\n\r** Data num points = %u\n\r", radarData.pointCloud.numPoints);
 
       for (uint16_t i = 0u; i < radarData.pointCloud.numPoints; i++)
       {
-        //sprintf(buffer, "* x = %i\n\r", radarData.pointCloud.points[i].x);
-/*
-        sprintf(buffer, "* %i : x = %i, y = %i, z = %i, i = %u, v = %i\n\r", i, 
-          radarData.pointCloud.points[i].x, radarData.pointCloud.points[i].y,
-          radarData.pointCloud.points[i].z, radarData.pointCloud.points[i].intensity,
-          radarData.pointCloud.points[i].velocity);
-        Serial.print(buffer);*/
-
         if (radarData.pointCloud.points[i].y < yMin)
         {
           yMin = radarData.pointCloud.points[i].y;
         }
       }
       
-      sprintf(buffer, "* Distance = %i\n\r", yMin);
+      sprintf(buffer, "* Distance = %imm\n\r", yMin);
       Serial.print(buffer);
 
       break;    
     } 
     
-    // Processing statistics
-    case RADARIQ_CMD_PROC_STATS:
-    {
-     /* RadarIQProcessingStats_t processing;
-      RadarIQChipTemperatures_t temperatures;
-      
-      RadarIQ_getProcessingStats(myRadar, &processing);
-      RadarIQ_getChipTemperatures(myRadar, &temperatures);
-      
-      sprintf(buffer, "* Processing: %u, %u, %u, %u, %u, %u, %u\n\r", processing.activeFrameCPULoad,
-        processing.interFrameCPULoad, processing.interFrameProcTime,
-        processing.transmitOutputTime, processing.interFrameProcMargin,
-        processing.interChirpProcMargin, processing.uartTransmitTime);
-      Serial.print(buffer);
-      
-      sprintf(buffer, "* Temperature: %i, %i, %i, %i, %i, %i, %i, %i, %i, %i\n\r", temperatures.sensor0,
-        temperatures.sensor1, temperatures.powerManagement, temperatures.rx0,
-        temperatures.rx1, temperatures.rx2, temperatures.rx3, temperatures.tx0,
-        temperatures.tx1, temperatures.tx2);
-      Serial.print(buffer);*/
-      
-      break;    
-    }
-    
-    case RADARIQ_CMD_POINTCLOUD_STATS:
-    {
-      RadarIQPointcloudStats_t pointcloud;
-      
-      RadarIQ_getPointCloudStats(myRadar, &pointcloud);
-      
-      /*sprintf(buffer, "* Pointcloud: %u, %u, %u, %u, %u, %u, %u, %u\n\r", pointcloud.frameAggregatingTime,
-        pointcloud.intensitySortTime, pointcloud.nearestNeighboursTime,
-        pointcloud.uartTransmitTime, pointcloud.numFilteredPoints,
-        pointcloud.numPointsTransmitted, pointcloud.inputPointsTruncated,
-        pointcloud.outputPointsTruncated);
-      Serial.print(buffer);*/
-
-      break;
-    }
-    
     default:
     {
+      break;
     }    
   }
 
-  // Check if an object was detected within 500mm
   if (yMin < 1000)
   {
-    noInterrupts();
-    int period = 1000 + ((int)abs(yMin) * 10); 
-    sprintf(buffer, "Period = %i\n\r", period);
-    Serial.print(buffer);
-    OCR1A = period;
-    TIMSK1 |= (1 << OCIE1A);  // Enable timer compare interrupt
-    interrupts();
-    
+    ledPeriod = yMin + 50;
+
+    if ((millis() - radarLastFrameTime) > (2 * (1000u / RADAR_FRAME_RATE)))
+    {
+      yMin = 9999;
+    }
   }
   else
-  {    
-    TIMSK1 &= ~(1 << OCIE1A);  // Disable timer compare interrupt
-    digitalWrite(LED_BUILTIN, LOW);
+  {
+    ledPeriod = -1;
+    digitalWrite(LED_BUILTIN, 0);
   }
 
-  yMin = 10000;
+  if (ledPeriod >= 0)
+  {
+    if ((millis() - ledLastToggleTime) > ledPeriod)
+    {
+      digitalWrite(LED_BUILTIN, digitalRead(LED_BUILTIN) ^ 1);
+      ledLastToggleTime = millis();
+    }
+  }
 }
 
-//------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 // Radar Callback Functions
 //--------------------------
 
@@ -387,7 +355,12 @@ static void callbackRadarLog(char * const buffer)
   Serial.println(buffer);    
 }
 
-//------------------------------------------------------------------------------
+static uint32_t callbackMillis(void)
+{
+  return millis() & 0xFFFFFFFF;
+}
+
+//-------------------------------------------------------------------------------------------------
 // Assertion Handler
 //-------------------
 
@@ -399,10 +372,4 @@ void __assert(const char *__func, const char *__file, int __lineno, const char *
 
   delay(100);
   abort();
-}
-
-
-ISR(TIMER1_COMPA_vect)          // timer compare interrupt service routine
-{
-  digitalWrite(LED_BUILTIN, digitalRead(LED_BUILTIN) ^ 1);   // toggle LED pin
 }

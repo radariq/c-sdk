@@ -52,14 +52,7 @@ extern "C" {
 /**
  * Assertion macro - redefine if necessary or remove at your own risk
  */
-#define radariq_assert(expr)			assert(expr)
-
-/**
- * Macro to read the microcontroller's up-time in milliseconds
- * Redefine the function as needed to operate on your platform and include any necessary header files below
- */
-#include <Arduino.h>
-#define radariq_get_mseconds			millis()	//TODO use a callback instead?
+#define radariq_assert(expr)	assert(expr)
 
 //===============================================================================================//
 // DATA TYPES
@@ -314,7 +307,8 @@ typedef RadarIQ_t* RadarIQHandle_t;
 /* Object initialisation */
 RadarIQHandle_t RadarIQ_init(void(*sendSerialDataCallback)(uint8_t * const, const uint16_t),
 		RadarIQUartData_t(*readSerialDataCallback)(void),
-		void(*logCallback)(char * const));
+		void(*logCallback)(char * const),
+		uint32_t(*millisCallback)(void));
 
 /* UART read function */
 RadarIQCommand_t RadarIQ_readSerial(const RadarIQHandle_t obj);

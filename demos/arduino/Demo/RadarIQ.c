@@ -115,6 +115,7 @@ struct RadarIQ_t
 	void(*sendSerialDataCallback)(uint8_t * const, const uint16_t);
 	RadarIQUartData_t(*readSerialDataCallback)(void);
 	void(*logCallback)(char * const);
+	uint32_t(*millisCallback)(void);
 };
 
 //===============================================================================================//
@@ -170,16 +171,19 @@ static void RadarIQ_unpack16Signed(int16_t const data, uint8_t * const dest);
  * @param sendSerialDataCallback Callback function for sending data over UART to the device
  * @param readSerialDataCallback Callback function for reading UART data from the device
  * @param logCallback Callback function for printing out debug messages e.g. over USB serial
+ * @param millisCallback Callback function for reading the microcontroller's uptime in milliseconds
  * 
- * @return Description of the return value
+ * @return A handle for an instance of the RadarIQ_t object
  */ 
 RadarIQHandle_t RadarIQ_init(void(*sendSerialDataCallback)(uint8_t * const, const uint16_t),
 		RadarIQUartData_t(*readSerialDataCallback)(void),
-		void(*logCallback)(char * const))
+		void(*logCallback)(char * const),
+		uint32_t(*millisCallback)(void))
 {
 	radariq_assert(NULL != sendSerialDataCallback);
 	radariq_assert(NULL != readSerialDataCallback);
 	radariq_assert(NULL != logCallback);
+	radariq_assert(NULL != millisCallback);
 
 	RadarIQHandle_t handle = malloc(sizeof(RadarIQ_t));
 	radariq_assert(NULL != handle);
@@ -188,6 +192,7 @@ RadarIQHandle_t RadarIQ_init(void(*sendSerialDataCallback)(uint8_t * const, cons
 	handle->sendSerialDataCallback = sendSerialDataCallback;
 	handle->readSerialDataCallback = readSerialDataCallback;
 	handle->logCallback = logCallback;
+	handle->millisCallback = millisCallback;
 
 	handle->captureMode = RADARIQ_MODE_POINT_CLOUD;
 	handle->rxState = RX_STATE_WAITING_FOR_HEADER;
@@ -1295,7 +1300,7 @@ static RadarIQCommand_t RadarIQ_pollResponse(const RadarIQHandle_t obj)
 
 	RadarIQCommand_t response;
 
-    int64_t startTime = (int64_t)radariq_get_mseconds;
+    int32_t startTime = (int32_t)obj->millisCallback();
     char strMsg[32]; 
 	
 	do
@@ -1308,7 +1313,7 @@ static RadarIQCommand_t RadarIQ_pollResponse(const RadarIQHandle_t obj)
 			//obj->logCallback(strMsg);
 			break;	
 		}
-	}while (startTime >= ((int64_t)radariq_get_mseconds - 1000));
+	}while (startTime >= (((int32_t)obj->millisCallback()) - 1000));
 
 	if (RADARIQ_CMD_NONE >= response)
 	{
@@ -1408,15 +1413,13 @@ static RadarIQCommand_t RadarIQ_parsePacket(const RadarIQHandle_t obj)
  */
 static void RadarIQ_parsePointCloud(const RadarIQHandle_t obj)
 {
-  RadarIQCommand_t ret = RADARIQ_CMD_NONE;
+	RadarIQCommand_t ret = RADARIQ_CMD_NONE;
   
 	const RadarIQSubframe_t subFrameType = (RadarIQSubframe_t)obj->rxPacket.data[2];
 	uint8_t pointCount = obj->rxPacket.data[3];
 	obj->data.pointCloud.isFrameComplete = false;
 	obj->data.pointCloud.numPoints = pointCount;
 	uint8_t packetIdx = 4u;
-
-  char buff[32];
 
 	// Loop through points in packet
 	uint8_t pointNum;
@@ -1550,7 +1553,7 @@ static void RadarIQ_parseMessage(const RadarIQHandle_t obj)
 			break;	
 	}
 	
-	snprintf(strLog, sizeof(strLog), "Radar Message - %s (%u):, %s", strMsgType, obj->rxPacket.data[3], (char*)&obj->rxPacket.data[4]);
+	snprintf(strLog, sizeof(strLog), "Radar Message - %s (%u):, %s", strMsgType, (int)msgType, (char*)&obj->rxPacket.data[4]);
 	strLog[255] = 0;
 	obj->logCallback(strLog);
 }
@@ -1678,7 +1681,7 @@ static RadarIQReturnVal_t RadarIQ_decodePacket(const RadarIQHandle_t obj)
 
 	if (crc == rxCrc)
 	{
-		RADARIQ_RETURN_VAL_OK;
+		ret = RADARIQ_RETURN_VAL_OK;
 	}
 
 	return ret;
