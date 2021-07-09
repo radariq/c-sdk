@@ -1,0 +1,23 @@
+arduino-copy:
+  stage: deploy
+  script:
+    - git config user.email "cipipeline@radariq.io"
+    - git config user.name "CI Pipeline"
+    - git clone https://gitlab.com/betasolutions/clients/RAD/m-series/sw/arduino-library arduino-library
+    - cp src/RadarIQ.c arduino-library/src
+    - cp src/RadarIQ.h arduino-library/src
+    - cd arduino-library
+    - git add .
+    - git commit -m "Updating SDK files to match the c-sdk"
+    - git push
+  only:
+    - /^\d+\.\d+\.\d+$/
+deploy:
+  image:  registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
+  script:
+    - apk update && apk add doxygen graphviz ttf-freefont
+    - doxygen Doxyfile
+    - aws configure set region us-east-1
+    - aws s3 cp documentation/html s3://$S3_BUCKET/c-sdk  --recursive --delete
+  only:
+    - /^\d+\.\d+\.\d+$/
