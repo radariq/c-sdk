@@ -697,7 +697,7 @@ RadarIQReturnVal_t RadarIQ_setMode(const RadarIQHandle_t obj, RadarIQCaptureMode
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
-    if ((RADARIQ_MODE_POINT_CLOUD > mode) || (RADARIQ_MODE_RAW_DATA < mode))    //TODO remove raw
+    if ((RADARIQ_MODE_POINT_CLOUD > mode) || (RADARIQ_MODE_OBJECT_TRACKING < mode))
     {
         ret = RADARIQ_RETURN_VAL_ERR;
         return ret;    

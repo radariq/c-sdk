@@ -250,7 +250,7 @@ typedef struct
 typedef struct
 {
     RadarIQProcessingStats_t processing;       ///< Statistics relating to general data processing
-    RadarIQPointcloudStats_t pointcloud        ///< Statistics relating to the point cloud specific processing
+    RadarIQPointcloudStats_t pointcloud;       ///< Statistics relating to the point cloud specific processing
     RadarIQChipTemperatures_t temperature;     ///< Statistics relating to the sensors temperature
 } RadarIQStatistics_t;
 
