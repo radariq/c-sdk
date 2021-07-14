@@ -1309,15 +1309,15 @@ static RadarIQCommand_t RadarIQ_pollResponse(const RadarIQHandle_t obj)
         if (RADARIQ_CMD_NONE < response)
         {
             //sprintf(strMsg, "pollResponse: response %i", response);
-            //obj->logCallback(strMsg);
+            //obj->logCallback(strMsg); // @review - Remove commented code.
             break;    
         }
     }while (startTime >= (((int32_t)obj->millisCallback()) - 1000));
 
-    if (RADARIQ_CMD_NONE >= response)
+    if (RADARIQ_CMD_NONE >= response) // @review - Remove unused if.
     {
         //sprintf(strMsg, "pollResponse: timeout at %i", radariq_get_seconds);
-        //obj->logCallback(strMsg);
+        //obj->logCallback(strMsg); 
     }
 
     return response;
@@ -1337,16 +1337,16 @@ static RadarIQCommand_t RadarIQ_parsePacket(const RadarIQHandle_t obj)
     const RadarIQCommand_t command = (RadarIQCommand_t)obj->rxPacket.data[0];
     RadarIQCommand_t ret = command;
 
-    //TODO: check command variant is response
+    //TODO: check command variant is response // @review - do this todo.
 
     switch (command)
     {
-    case RADARIQ_CMD_MESSAGE:
+    case RADARIQ_CMD_MESSAGE: // @review - Cases not indented.
     {
         RadarIQ_parseMessage(obj);
         break;    
     }
-    case RADARIQ_CMD_VERSION:       
+    case RADARIQ_CMD_VERSION:       // @review - No breaks in cases need to be commented.
     case RADARIQ_CMD_SERIAL:        
     case RADARIQ_CMD_RESET:              
     case RADARIQ_CMD_FRAME_RATE:          
@@ -1366,37 +1366,37 @@ static RadarIQCommand_t RadarIQ_parsePacket(const RadarIQHandle_t obj)
     }
     case RADARIQ_CMD_PNT_CLOUD_FRAME:
     {
-        //obj->logCallback("parsePacket: Point Cloud");
+        //obj->logCallback("parsePacket: Point Cloud"); // @review - Remove commented code.
         RadarIQ_parsePointCloud(obj);
         break;
     }
     case RADARIQ_CMD_OBJ_TRACKING_FRAME:
     {
-        //obj->logCallback("parsePacket: Object Tracking");
+        //obj->logCallback("parsePacket: Object Tracking"); // @review - Remove commented code.
         RadarIQ_parseObjectTracking(obj);
         break;
     }
     case RADARIQ_CMD_PROC_STATS:
     {
-        //obj->logCallback("parsePacket: Processing Stats");
+        //obj->logCallback("parsePacket: Processing Stats"); // @review - Remove commented code.
         RadarIQ_parseProcessingStats(obj);
         break;
     }
     case RADARIQ_CMD_POINTCLOUD_STATS:
     {
-        //obj->logCallback("parsePacket: Point Cloud Stats");
+        //obj->logCallback("parsePacket: Point Cloud Stats"); // @review - Remove commented code.
         RadarIQ_parsePointCloudStats(obj);
         break;    
     }
     case RADARIQ_CMD_POWER_STATUS:
     {
-        //obj->logCallback("parsePacket: Power status");
+        //obj->logCallback("parsePacket: Power status"); // @review - Remove commented code.
         RadarIQ_parsePowerStatus(obj);
         break;    
     }
     default:
     {
-        obj->logCallback("parsePacket: Unknown command");
+        obj->logCallback("parsePacket: Unknown command"); // @review - Should this be commented out?
         ret = RADARIQ_CMD_UNKNOWN;
         break;
     }
@@ -1412,6 +1412,8 @@ static RadarIQCommand_t RadarIQ_parsePacket(const RadarIQHandle_t obj)
  */
 static void RadarIQ_parsePointCloud(const RadarIQHandle_t obj)
 {
+    // @review - Should still NULL check obj even though the function calling it probably already did it.
+
     RadarIQCommand_t ret = RADARIQ_CMD_NONE;
   
     const RadarIQSubframe_t subFrameType = (RadarIQSubframe_t)obj->rxPacket.data[2];
@@ -1463,6 +1465,7 @@ static void RadarIQ_parsePointCloud(const RadarIQHandle_t obj)
  */
 static void RadarIQ_parseObjectTracking(const RadarIQHandle_t obj)
 {
+    // @review - Should still NULL check obj even though the function calling it probably already did it.
     const RadarIQSubframe_t subFrameType = (RadarIQSubframe_t)obj->rxPacket.data[2];
     uint8_t objectCount = obj->rxPacket.data[3];
     obj->data.objectTracking.isFrameComplete = false;
@@ -1566,8 +1569,8 @@ static void RadarIQ_parseProcessingStats(const RadarIQHandle_t obj)
 {
     radariq_assert(NULL != obj);
     
-    memcpy((void*)&obj->stats.processing, (void*)&obj->rxPacket.data[2], 28);
-    memcpy((void*)&obj->stats.temperature, (void*)&obj->rxPacket.data[30], 20);
+    memcpy((void*)&obj->stats.processing, (void*)&obj->rxPacket.data[2], 28); // @review - Should replace with sizeof(RadarIQProcessingStats_t)
+    memcpy((void*)&obj->stats.temperature, (void*)&obj->rxPacket.data[30], 20); // @review - Should replace with sizeof(RadarIQChipTemperatures_t)
 }
 
 /**
@@ -1579,7 +1582,7 @@ static void RadarIQ_parsePointCloudStats(const RadarIQHandle_t obj)
 {
     radariq_assert(NULL != obj);
     
-    memcpy((void*)&obj->stats.pointcloud, (void*)&obj->rxPacket.data[2], 26);    
+    memcpy((void*)&obj->stats.pointcloud, (void*)&obj->rxPacket.data[2], 26); // @review - Should replace with sizeof(RadarIQPointcloudStats_t)
 }
 
 /**
@@ -1676,7 +1679,7 @@ static RadarIQReturnVal_t RadarIQ_decodePacket(const RadarIQHandle_t obj)
     uint16_t const rxCrc = (uint16_t) ( (*(obj->rxPacket.data + obj->rxPacket.len - 2u) & (uint16_t)0xFF) << 8u) |
             (*(obj->rxPacket.data + obj->rxPacket.len - 1u) & (uint16_t)0xFF);
 
-    RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_ERR;
+    RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_ERR; // @review - Move to top of function.
 
     if (crc == rxCrc)
     {
@@ -1747,6 +1750,7 @@ static void RadarIQ_encodeHelper(const RadarIQHandle_t obj, uint8_t const databy
  */
 static uint16_t RadarIQ_getCrc16Ccitt(uint8_t const * array, uint8_t len)
 {
+    // @review - NULL check
     uint8_t x;
     uint16_t crc = (uint16_t)0xFFFFu;
 
@@ -1773,6 +1777,7 @@ static uint16_t RadarIQ_getCrc16Ccitt(uint8_t const * array, uint8_t len)
  */
 static uint16_t RadarIQ_pack16Unsigned(const uint8_t * const data)
 {
+    // @review - NULL check
     uint16_t dest = 0u;
     dest |= (((uint32_t)data[1] << 8u) & 0xFF00u);
     dest |= (((uint32_t)data[0]) & 0x00FFu);
@@ -1789,6 +1794,7 @@ static uint16_t RadarIQ_pack16Unsigned(const uint8_t * const data)
  */
 static int16_t RadarIQ_pack16Signed(const uint8_t * const data)
 {
+    // @review - NULL check
     uint16_t temp = 0u;
     int16_t returnValue = 0;
 
@@ -1808,6 +1814,7 @@ static int16_t RadarIQ_pack16Signed(const uint8_t * const data)
  */
 static void RadarIQ_unpack16Unsigned(uint16_t const data, uint8_t * const dest)
 {
+    // @review - NULL check
     dest[1] = (data >> 8u) & 0xFFu;
     dest[0] = data & 0xFFu;
 }
@@ -1820,6 +1827,7 @@ static void RadarIQ_unpack16Unsigned(uint16_t const data, uint8_t * const dest)
  */
 static void RadarIQ_unpack16Signed(int16_t const data, uint8_t * const dest)
 {
+    // @review - NULL check
     uint16_t temp = 0u;
     memcpy(&temp, &data, sizeof(uint16_t));
 
