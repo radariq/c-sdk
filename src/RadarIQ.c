@@ -166,6 +166,7 @@ static void RadarIQ_unpack16Signed(int16_t const data, uint8_t * const dest);
  * 
  * @return A handle for an instance of the RadarIQ_t object
  */ 
+// @review - backslash multi-line code
 RadarIQHandle_t RadarIQ_init(void(*sendSerialDataCallback)(uint8_t * const, const uint16_t),
         RadarIQUartData_t(*readSerialDataCallback)(void),
         void(*logCallback)(char * const),
@@ -245,7 +246,7 @@ RadarIQCommand_t RadarIQ_readSerial(const RadarIQHandle_t obj)
             }
             default:
             {
-                break;
+                break; // @review - assert here
             }
         }
     }
@@ -277,6 +278,7 @@ void RadarIQ_getData(const RadarIQHandle_t obj, RadarIQData_t * dest)
  * @param pointcloud Pointer to a RadarIQPointcloudStats_t struct to copy the point-cloud statistics into
  * @param temperatures Pointer to a RadarIQChipTemperatures_t struct to copy the radar chip temperatures into
  */ 
+// @review - backslash multi-line code
 void RadarIQ_getStatistics(const RadarIQHandle_t obj, RadarIQProcessingStats_t * const processing, 
     RadarIQPointcloudStats_t * const pointcloud, RadarIQChipTemperatures_t * const temperatures)
 {
@@ -359,9 +361,9 @@ void RadarIQ_getChipTemperatures(const RadarIQHandle_t obj, RadarIQChipTemperatu
  *
  * @return The size of a single RadarIQ_t instance in bytes
  */ 
-uint32_t RadarIQ_getMemoryUsage()
+uint32_t RadarIQ_getMemoryUsage() // @review - void parameter
 {
-    return sizeof(RadarIQ_t);
+    return sizeof(RadarIQ_t); // @review - Should this be cast to (uint32_t)
 }
 
 /**
@@ -373,6 +375,7 @@ uint32_t RadarIQ_getMemoryUsage()
  * 
  * @return The current length of the packet in the buffer, or 0 if none is present
  */ 
+// @review - Returns a uint8_t but is a uint16_t
 uint8_t RadarIQ_getDataBuffer(const RadarIQHandle_t obj, uint8_t* dest)
 {
     radariq_assert(NULL != obj);
@@ -567,7 +570,7 @@ RadarIQReturnVal_t RadarIQ_getSerialNumber(const RadarIQHandle_t obj, RadarIQSer
 
     if (RADARIQ_CMD_SERIAL == RadarIQ_pollResponse(obj))
     {
-        memcpy((void*)serial, (void*)&obj->rxPacket.data[2], 4);
+        memcpy((void*)serial, (void*)&obj->rxPacket.data[2], 4); // @review - Should this be sizeof(RadarIQSerialNo_t), ie 8 or is it only expecting part a, ie 4
     }
     else
     {
@@ -715,7 +718,7 @@ RadarIQReturnVal_t RadarIQ_setMode(const RadarIQHandle_t obj, RadarIQCaptureMode
         ret = RADARIQ_RETURN_VAL_ERR;    
     }
 
-    return ret;
+    return ret; // @review - this should be the only return. The rest should be in the else of the bound check if.
 }
 
 /**
@@ -731,7 +734,7 @@ RadarIQReturnVal_t RadarIQ_getDistanceFilter(const RadarIQHandle_t obj, uint16_t
 {
     radariq_assert(NULL != obj);
     radariq_assert(NULL != min);
-    radariq_assert(NULL != max);    
+    radariq_assert(NULL != max);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
@@ -829,10 +832,10 @@ RadarIQReturnVal_t RadarIQ_getAngleFilter(const RadarIQHandle_t obj, int8_t * co
     if (RADARIQ_CMD_ANGLE_FILT == RadarIQ_pollResponse(obj))
     {
         *min = (int8_t)(0u | obj->rxPacket.data[2]);
-        *max = (int8_t)(0u | obj->rxPacket.data[3]);    
+        *max = (int8_t)(0u | obj->rxPacket.data[3]);
     }
     else
-    {    
+    {
         ret = RADARIQ_RETURN_VAL_ERR;
     }
 
@@ -885,8 +888,8 @@ RadarIQReturnVal_t RadarIQ_setAngleFilter(const RadarIQHandle_t obj, int8_t min,
     
     obj->txPacket.data[0] = RADARIQ_CMD_ANGLE_FILT;
     obj->txPacket.data[1] = RADARIQ_CMD_VAR_SET;
-    obj->txPacket.data[2] = (uint8_t)(0 | min);
-    obj->txPacket.data[3] = (uint8_t)(0 | max);    
+    obj->txPacket.data[2] = (uint8_t)(0 | min); // @review - Check this works
+    obj->txPacket.data[3] = (uint8_t)(0 | max);
     obj->txPacket.len = 4u;
     
     RadarIQ_sendPacket(obj);
@@ -910,6 +913,7 @@ RadarIQReturnVal_t RadarIQ_setAngleFilter(const RadarIQHandle_t obj, int8_t min,
 RadarIQReturnVal_t RadarIQ_getMovingFilter(const RadarIQHandle_t obj, RadarIQMovingFilterMode_t * const filter)
 {
     radariq_assert(NULL != obj);
+    // @review - No NULL check on filter
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
@@ -964,7 +968,7 @@ RadarIQReturnVal_t RadarIQ_setMovingFilter(const RadarIQHandle_t obj, RadarIQMov
         ret = RADARIQ_RETURN_VAL_ERR;    
     }
 
-    return ret;
+    return ret; // @review - Should only have one return.
 }
 
 /**
@@ -978,6 +982,7 @@ RadarIQReturnVal_t RadarIQ_setMovingFilter(const RadarIQHandle_t obj, RadarIQMov
 RadarIQReturnVal_t RadarIQ_getPointDensity(const RadarIQHandle_t obj, RadarIQPointDensity_t * const density)
 {
     radariq_assert(NULL != obj);
+    // @review - No NULL check on density
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
@@ -1031,7 +1036,7 @@ RadarIQReturnVal_t RadarIQ_setPointDensity(const RadarIQHandle_t obj, RadarIQPoi
         ret = RADARIQ_RETURN_VAL_ERR;    
     }
 
-    return ret;
+    return ret; // @review - One return
 }
 
 /**
@@ -1045,7 +1050,7 @@ RadarIQReturnVal_t RadarIQ_setPointDensity(const RadarIQHandle_t obj, RadarIQPoi
 RadarIQReturnVal_t RadarIQ_getSensitivity(const RadarIQHandle_t obj, uint8_t * const sensitivity)
 {
     radariq_assert(NULL != obj);
-
+    // @review - No NULL check on sensitivity
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
     obj->txPacket.data[0] = RADARIQ_CMD_SENSITIVITY;
@@ -1113,7 +1118,8 @@ RadarIQReturnVal_t RadarIQ_setSensitivity(const RadarIQHandle_t obj, uint8_t sen
 RadarIQReturnVal_t RadarIQ_getHeightFilter(const RadarIQHandle_t obj, int16_t * const min, int16_t * const max)
 {
     radariq_assert(NULL != obj);
-
+    // @review - No NULL check on min 
+    // @review - No NULL check on max
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
     
     obj->txPacket.data[0] = RADARIQ_CMD_HEIGHT_FILT;
@@ -1139,7 +1145,7 @@ RadarIQReturnVal_t RadarIQ_getHeightFilter(const RadarIQHandle_t obj, int16_t * 
  * Sends a ::RADARIQ_CMD_HEIGHT_FILT packet to the device to set the height filter settings.
  *
  * @param obj The RadarIQ object handle returned from RadarIQ_init()
- * @param min The minimum height setting into apply
+ * @param min The minimum height setting into apply // @review - Should be "to apply"
  * @param max The minimum height setting into apply
  * 
  * @return ::RADARIQ_RETURN_VAL_OK on success, ::RADARIQ_RETURN_VAL_ERR if no valid response was received
@@ -1155,7 +1161,7 @@ RadarIQReturnVal_t RadarIQ_setHeightFilter(const RadarIQHandle_t obj, int16_t mi
         int16_t temp = min;
         min = max;
         max = temp;    
-    }
+    } // @review -Do min and max also need to be range checked?
     
     obj->txPacket.data[0] = RADARIQ_CMD_HEIGHT_FILT;
     obj->txPacket.data[1] = RADARIQ_CMD_VAR_SET;
@@ -1192,9 +1198,9 @@ RadarIQReturnVal_t RadarIQ_sceneCalibrate(const RadarIQHandle_t obj)
 
     RadarIQ_sendPacket(obj);
     
-    // Poll for acknowledgment message
+    // Poll for acknowledgment message // @review - typo acknowledgement
     // Several other messages are expected to be received before the ack
-    for (uint32_t poll = 0u; poll < 50u; poll++)
+    for (uint32_t poll = 0u; poll < 50u; poll++) // @review - #DEFINE 50u to something
     {
         if (RADARIQ_CMD_SCENE_CALIB == RadarIQ_pollResponse(obj))
         {
@@ -1217,6 +1223,7 @@ RadarIQReturnVal_t RadarIQ_sceneCalibrate(const RadarIQHandle_t obj)
 RadarIQReturnVal_t RadarIQ_getObjectSize(const RadarIQHandle_t obj, uint8_t * const size)
 {
     radariq_assert(NULL != obj);
+    // @review - No NULL check on size
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 

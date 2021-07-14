@@ -53,7 +53,7 @@ extern "C" {
 /**
  * Assertion macro - redefine if necessary or remove at your own risk
  */
-#define radariq_assert(expr)    assert(expr)
+#define radariq_assert(expr)    assert(expr) // @review - Should be RADARIQ_ASSERT
 
 //===============================================================================================//
 // DATA TYPES
@@ -279,7 +279,7 @@ typedef struct
  * RadarIQ device serial number format
  */
 typedef struct
-{
+{ // @review - a and b should be more descriptive even though there is a comment.
     uint32_t a;                 ///< First part of the sensor serial number
     uint32_t b;                 ///< Second part of the device serial number
 } RadarIQSerialNo_t;
