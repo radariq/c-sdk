@@ -99,7 +99,7 @@ typedef enum
 typedef enum
 {
     RADARIQ_RETURN_VAL_OK = 0,             ///< Function excecuted ok
-    RADARIQ_RETURN_VAL_WARNING = 1,        ///< Value(s) passed to function were out of range and limitted
+    RADARIQ_RETURN_VAL_WARNING = 1,        ///< Value(s) passed to function were out of range and limitted @review typo
     RADARIQ_RETURN_VAL_ERR = 2             ///< Function returned an error
 } RadarIQReturnVal_t;
 
@@ -303,7 +303,7 @@ typedef RadarIQ_t* RadarIQHandle_t;
 //===============================================================================================//
 // FUNCTIONS
 //===============================================================================================//
-
+// @review - Backslash all the multi-line code.
 /* Object initialization */
 RadarIQHandle_t RadarIQ_init(void(*sendSerialDataCallback)(uint8_t * const, const uint16_t),
         RadarIQUartData_t(*readSerialDataCallback)(void),
