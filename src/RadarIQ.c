@@ -20,16 +20,6 @@
 //===============================================================================================//
 
 /**
- * UART packet command variants
- */
-typedef enum
-{
-    RADARIQ_CMD_VAR_REQUEST     = 0,    ///< Requests a response from the device
-    RADARIQ_CMD_VAR_RESPONSE    = 1,    ///< A response sent from the device
-    RADARIQ_CMD_VAR_SET         = 2     ///< Sets a parameter of the device
-} RadarIQCommandVariant_t;
-
-/**
  * UART packet receiving states
  */
 typedef enum
@@ -55,19 +45,6 @@ typedef struct
     uint8_t data[RADARIQ_TX_BUFFER_SIZE];    ///< Buffer to store a single packet
     uint16_t len;                            ///< Length of packet in bytes
 } RadarIQTxBuffer_t;
-
-/**
- * Types of messages sent from the device in a message packet
- */
-typedef enum
-{
-    RADARIQ_MSG_TYPE_TEMPORARY     = 0,        ///< Temporary messages not intended to be used permanently
-    RADARIQ_MSG_TYPE_DEBUG         = 1,        ///< Debug information about an operation
-    RADARIQ_MSG_TYPE_INFO          = 2,        ///< General information about an operation
-    RADARIQ_MSG_TYPE_WARNING       = 3,        ///< An operation was completed but not as expected
-    RADARIQ_MSG_TYPE_ERROR         = 4,        ///< An operation was not completed due to an error
-    RADARIQ_MSG_TYPE_SUCCESS       = 5         ///< An operation completed successfully
-} RadarIQMsgType_t;
 
 /**
  * Sub-frame types for object tracking and point cloud frames sent over multiple packets
@@ -121,6 +98,8 @@ struct RadarIQ_t
 #define RADARIQ_PACKET_HEAD           (uint8_t)0xB0    ///< Packet header byte
 #define RADARIQ_PACKET_FOOT           (uint8_t)0xB1    ///< Packet footer byte
 
+#define RADARIQ_SCENE_CALIB_POLLS     20u   ///< Number of polls to check for scene calibration acknowledgement packet from device
+
 //===============================================================================================//
 // FILE-SCOPE VARIABLES
 //===============================================================================================//
@@ -171,13 +150,13 @@ RadarIQHandle_t RadarIQ_init(void(*sendSerialDataCallback)(uint8_t * const, cons
         void(*logCallback)(char * const),
         uint32_t(*millisCallback)(void))
 {
-    radariq_assert(NULL != sendSerialDataCallback);
-    radariq_assert(NULL != readSerialDataCallback);
-    radariq_assert(NULL != logCallback);
-    radariq_assert(NULL != millisCallback);
+    RADARIQ_ASSERT(NULL != sendSerialDataCallback);
+    RADARIQ_ASSERT(NULL != readSerialDataCallback);
+    RADARIQ_ASSERT(NULL != logCallback);
+    RADARIQ_ASSERT(NULL != millisCallback);
 
     RadarIQHandle_t handle = malloc(sizeof(RadarIQ_t));
-    radariq_assert(NULL != handle);
+    RADARIQ_ASSERT(NULL != handle);
     memset((void*)handle, 0, sizeof(RadarIQ_t));
 
     handle->sendSerialDataCallback = sendSerialDataCallback;
@@ -200,7 +179,7 @@ RadarIQHandle_t RadarIQ_init(void(*sendSerialDataCallback)(uint8_t * const, cons
  */ 
 RadarIQCommand_t RadarIQ_readSerial(const RadarIQHandle_t obj)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
 
     RadarIQCommand_t packet = RADARIQ_CMD_NONE;
     RadarIQUartData_t rxData;
@@ -245,6 +224,7 @@ RadarIQCommand_t RadarIQ_readSerial(const RadarIQHandle_t obj)
             }
             default:
             {
+                packet = RADARIQ_CMD_ERROR;
                 break;
             }
         }
@@ -262,8 +242,8 @@ RadarIQCommand_t RadarIQ_readSerial(const RadarIQHandle_t obj)
  */ 
 void RadarIQ_getData(const RadarIQHandle_t obj, RadarIQData_t * dest)
 {
-    radariq_assert(NULL != obj);
-    radariq_assert(NULL != dest);
+    RADARIQ_ASSERT(NULL != obj);
+    RADARIQ_ASSERT(NULL != dest);
 
     memcpy((void*)dest, (void*)&obj->data, sizeof(RadarIQData_t));
 }
@@ -280,10 +260,10 @@ void RadarIQ_getData(const RadarIQHandle_t obj, RadarIQData_t * dest)
 void RadarIQ_getStatistics(const RadarIQHandle_t obj, RadarIQProcessingStats_t * const processing, 
     RadarIQPointcloudStats_t * const pointcloud, RadarIQChipTemperatures_t * const temperatures)
 {
-    radariq_assert(NULL != obj);    
-    radariq_assert(NULL != processing);
-    radariq_assert(NULL != pointcloud);
-    radariq_assert(NULL != temperatures);
+    RADARIQ_ASSERT(NULL != obj);    
+    RADARIQ_ASSERT(NULL != processing);
+    RADARIQ_ASSERT(NULL != pointcloud);
+    RADARIQ_ASSERT(NULL != temperatures);
     
     *processing = obj->stats.processing;
     *pointcloud = obj->stats.pointcloud;
@@ -300,7 +280,7 @@ void RadarIQ_getStatistics(const RadarIQHandle_t obj, RadarIQProcessingStats_t *
  */ 
 bool RadarIQ_isPowerGood(const RadarIQHandle_t obj)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
     
     return obj->isPowerGood;    
 }
@@ -314,8 +294,8 @@ bool RadarIQ_isPowerGood(const RadarIQHandle_t obj)
  */ 
 void RadarIQ_getProcessingStats(const RadarIQHandle_t obj, RadarIQProcessingStats_t * const dest)
 {
-    radariq_assert(NULL != obj);    
-    radariq_assert(NULL != dest);
+    RADARIQ_ASSERT(NULL != obj);    
+    RADARIQ_ASSERT(NULL != dest);
     
     *dest = obj->stats.processing;
 }
@@ -329,8 +309,8 @@ void RadarIQ_getProcessingStats(const RadarIQHandle_t obj, RadarIQProcessingStat
  */ 
 void RadarIQ_getPointCloudStats(const RadarIQHandle_t obj, RadarIQPointcloudStats_t * const dest)
 {
-    radariq_assert(NULL != obj);    
-    radariq_assert(NULL != dest);
+    RADARIQ_ASSERT(NULL != obj);    
+    RADARIQ_ASSERT(NULL != dest);
     
     *dest = obj->stats.pointcloud;
 }
@@ -344,8 +324,8 @@ void RadarIQ_getPointCloudStats(const RadarIQHandle_t obj, RadarIQPointcloudStat
  */ 
 void RadarIQ_getChipTemperatures(const RadarIQHandle_t obj, RadarIQChipTemperatures_t * const dest)
 {
-    radariq_assert(NULL != obj);    
-    radariq_assert(NULL != dest);
+    RADARIQ_ASSERT(NULL != obj);    
+    RADARIQ_ASSERT(NULL != dest);
     
     *dest = obj->stats.temperature;
 }
@@ -359,9 +339,9 @@ void RadarIQ_getChipTemperatures(const RadarIQHandle_t obj, RadarIQChipTemperatu
  *
  * @return The size of a single RadarIQ_t instance in bytes
  */ 
-uint32_t RadarIQ_getMemoryUsage()
+uint32_t RadarIQ_getMemoryUsage(void)
 {
-    return sizeof(RadarIQ_t);
+    return (uint32_t)(sizeof(RadarIQ_t));
 }
 
 /**
@@ -373,9 +353,9 @@ uint32_t RadarIQ_getMemoryUsage()
  * 
  * @return The current length of the packet in the buffer, or 0 if none is present
  */ 
-uint8_t RadarIQ_getDataBuffer(const RadarIQHandle_t obj, uint8_t* dest)
+uint16_t RadarIQ_getDataBuffer(const RadarIQHandle_t obj, uint8_t* dest)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
 
     memcpy(dest, obj->rxPacket.data, obj->rxPacket.len);
 
@@ -394,7 +374,7 @@ uint8_t RadarIQ_getDataBuffer(const RadarIQHandle_t obj, uint8_t* dest)
  */
 void RadarIQ_start(const RadarIQHandle_t obj, const uint8_t numFrames)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
 
     obj->txPacket.data[0] = RADARIQ_CMD_CAPTURE_START;
     obj->txPacket.data[1] = RADARIQ_CMD_VAR_REQUEST;
@@ -414,7 +394,7 @@ void RadarIQ_start(const RadarIQHandle_t obj, const uint8_t numFrames)
  */
 RadarIQReturnVal_t RadarIQ_reset(const RadarIQHandle_t obj, const RadarIQResetCode_t code)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
@@ -450,7 +430,7 @@ RadarIQReturnVal_t RadarIQ_reset(const RadarIQHandle_t obj, const RadarIQResetCo
  */
 RadarIQReturnVal_t RadarIQ_save(const RadarIQHandle_t obj)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
@@ -479,9 +459,9 @@ RadarIQReturnVal_t RadarIQ_save(const RadarIQHandle_t obj)
  */
 RadarIQReturnVal_t RadarIQ_getVersion(const RadarIQHandle_t obj, RadarIQVersion_t * const firmware, RadarIQVersion_t * const hardware)
 {
-    radariq_assert(NULL != obj);
-    radariq_assert(NULL != firmware);
-    radariq_assert(NULL != hardware);
+    RADARIQ_ASSERT(NULL != obj);
+    RADARIQ_ASSERT(NULL != firmware);
+    RADARIQ_ASSERT(NULL != hardware);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
@@ -517,10 +497,10 @@ RadarIQReturnVal_t RadarIQ_getVersion(const RadarIQHandle_t obj, RadarIQVersion_
 RadarIQReturnVal_t RadarIQ_getRadarVersions(const RadarIQHandle_t obj, RadarIQVersionIWR_t * const sbl,
         RadarIQVersionIWR_t * const app1, RadarIQVersionIWR_t * const app2)
 {
-    radariq_assert(NULL != obj);
-    radariq_assert(NULL != sbl);
-    radariq_assert(NULL != app1);
-    radariq_assert(NULL != app2);
+    RADARIQ_ASSERT(NULL != obj);
+    RADARIQ_ASSERT(NULL != sbl);
+    RADARIQ_ASSERT(NULL != app1);
+    RADARIQ_ASSERT(NULL != app2);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
@@ -555,7 +535,7 @@ RadarIQReturnVal_t RadarIQ_getRadarVersions(const RadarIQHandle_t obj, RadarIQVe
  */
 RadarIQReturnVal_t RadarIQ_getSerialNumber(const RadarIQHandle_t obj, RadarIQSerialNo_t * const serial)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
@@ -567,7 +547,7 @@ RadarIQReturnVal_t RadarIQ_getSerialNumber(const RadarIQHandle_t obj, RadarIQSer
 
     if (RADARIQ_CMD_SERIAL == RadarIQ_pollResponse(obj))
     {
-        memcpy((void*)serial, (void*)&obj->rxPacket.data[2], 4);
+        memcpy((void*)serial, (void*)&obj->rxPacket.data[2], sizeof(RadarIQSerialNo_t));
     }
     else
     {
@@ -587,7 +567,7 @@ RadarIQReturnVal_t RadarIQ_getSerialNumber(const RadarIQHandle_t obj, RadarIQSer
  */
 RadarIQReturnVal_t RadarIQ_getFrameRate(const RadarIQHandle_t obj, uint8_t * const rate)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
@@ -620,7 +600,7 @@ RadarIQReturnVal_t RadarIQ_getFrameRate(const RadarIQHandle_t obj, uint8_t * con
  */
 RadarIQReturnVal_t RadarIQ_setFrameRate(const RadarIQHandle_t obj, uint8_t rate)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
@@ -660,8 +640,8 @@ RadarIQReturnVal_t RadarIQ_setFrameRate(const RadarIQHandle_t obj, uint8_t rate)
  */
 RadarIQReturnVal_t RadarIQ_getMode(const RadarIQHandle_t obj, RadarIQCaptureMode_t * const mode)
 {
-    radariq_assert(NULL != obj);
-    radariq_assert(NULL != mode);
+    RADARIQ_ASSERT(NULL != obj);
+    RADARIQ_ASSERT(NULL != mode);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
@@ -693,26 +673,27 @@ RadarIQReturnVal_t RadarIQ_getMode(const RadarIQHandle_t obj, RadarIQCaptureMode
  */
 RadarIQReturnVal_t RadarIQ_setMode(const RadarIQHandle_t obj, RadarIQCaptureMode_t mode)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
     if ((RADARIQ_MODE_POINT_CLOUD > mode) || (RADARIQ_MODE_OBJECT_TRACKING < mode))
     {
-        ret = RADARIQ_RETURN_VAL_ERR;
-        return ret;    
+        ret = RADARIQ_RETURN_VAL_ERR; 
     }
-
-    obj->txPacket.data[0] = RADARIQ_CMD_MODE;
-    obj->txPacket.data[1] = RADARIQ_CMD_VAR_SET;
-    obj->txPacket.data[2] = (uint8_t)mode;
-    obj->txPacket.len = 3u;
-
-    RadarIQ_sendPacket(obj);
-
-    if (RADARIQ_CMD_MODE != RadarIQ_pollResponse(obj))
+    else
     {
-        ret = RADARIQ_RETURN_VAL_ERR;    
+        obj->txPacket.data[0] = RADARIQ_CMD_MODE;
+        obj->txPacket.data[1] = RADARIQ_CMD_VAR_SET;
+        obj->txPacket.data[2] = (uint8_t)mode;
+        obj->txPacket.len = 3u;
+
+        RadarIQ_sendPacket(obj);
+
+        if (RADARIQ_CMD_MODE != RadarIQ_pollResponse(obj))
+        {
+            ret = RADARIQ_RETURN_VAL_ERR;    
+        }
     }
 
     return ret;
@@ -729,9 +710,9 @@ RadarIQReturnVal_t RadarIQ_setMode(const RadarIQHandle_t obj, RadarIQCaptureMode
  */
 RadarIQReturnVal_t RadarIQ_getDistanceFilter(const RadarIQHandle_t obj, uint16_t * const min, uint16_t * const max)
 {
-    radariq_assert(NULL != obj);
-    radariq_assert(NULL != min);
-    radariq_assert(NULL != max);    
+    RADARIQ_ASSERT(NULL != obj);
+    RADARIQ_ASSERT(NULL != min);
+    RADARIQ_ASSERT(NULL != max);  
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
@@ -766,7 +747,7 @@ RadarIQReturnVal_t RadarIQ_getDistanceFilter(const RadarIQHandle_t obj, uint16_t
  */
 RadarIQReturnVal_t RadarIQ_setDistanceFilter(const RadarIQHandle_t obj, uint16_t min, uint16_t max)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
     
@@ -816,7 +797,7 @@ RadarIQReturnVal_t RadarIQ_setDistanceFilter(const RadarIQHandle_t obj, uint16_t
  */
 RadarIQReturnVal_t RadarIQ_getAngleFilter(const RadarIQHandle_t obj, int8_t * const min, int8_t * const max)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
@@ -829,10 +810,10 @@ RadarIQReturnVal_t RadarIQ_getAngleFilter(const RadarIQHandle_t obj, int8_t * co
     if (RADARIQ_CMD_ANGLE_FILT == RadarIQ_pollResponse(obj))
     {
         *min = (int8_t)(0u | obj->rxPacket.data[2]);
-        *max = (int8_t)(0u | obj->rxPacket.data[3]);    
+        *max = (int8_t)(0u | obj->rxPacket.data[3]); 
     }
     else
-    {    
+    {
         ret = RADARIQ_RETURN_VAL_ERR;
     }
 
@@ -851,7 +832,7 @@ RadarIQReturnVal_t RadarIQ_getAngleFilter(const RadarIQHandle_t obj, int8_t * co
  */
 RadarIQReturnVal_t RadarIQ_setAngleFilter(const RadarIQHandle_t obj, int8_t min, int8_t max)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
@@ -886,7 +867,7 @@ RadarIQReturnVal_t RadarIQ_setAngleFilter(const RadarIQHandle_t obj, int8_t min,
     obj->txPacket.data[0] = RADARIQ_CMD_ANGLE_FILT;
     obj->txPacket.data[1] = RADARIQ_CMD_VAR_SET;
     obj->txPacket.data[2] = (uint8_t)(0 | min);
-    obj->txPacket.data[3] = (uint8_t)(0 | max);    
+    obj->txPacket.data[3] = (uint8_t)(0 | max);
     obj->txPacket.len = 4u;
     
     RadarIQ_sendPacket(obj);
@@ -909,7 +890,8 @@ RadarIQReturnVal_t RadarIQ_setAngleFilter(const RadarIQHandle_t obj, int8_t min,
  */
 RadarIQReturnVal_t RadarIQ_getMovingFilter(const RadarIQHandle_t obj, RadarIQMovingFilterMode_t * const filter)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
+    RADARIQ_ASSERT(NULL != filter);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
@@ -942,26 +924,27 @@ RadarIQReturnVal_t RadarIQ_getMovingFilter(const RadarIQHandle_t obj, RadarIQMov
  */
 RadarIQReturnVal_t RadarIQ_setMovingFilter(const RadarIQHandle_t obj, RadarIQMovingFilterMode_t filter)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
     if ((RADARIQ_MOVING_BOTH != filter) && (RADARIQ_MOVING_OBJECTS_ONLY != filter))
     {
         ret = RADARIQ_RETURN_VAL_ERR;
-        return ret;    
     }
-
-    obj->txPacket.data[0] = RADARIQ_CMD_MOVING_FILT;
-    obj->txPacket.data[1] = RADARIQ_CMD_VAR_SET;
-    obj->txPacket.data[2] = (uint8_t)filter;
-    obj->txPacket.len = 3u;
-
-    RadarIQ_sendPacket(obj);
-
-    if (RADARIQ_CMD_MOVING_FILT != RadarIQ_pollResponse(obj))
+    else
     {
-        ret = RADARIQ_RETURN_VAL_ERR;    
+        obj->txPacket.data[0] = RADARIQ_CMD_MOVING_FILT;
+        obj->txPacket.data[1] = RADARIQ_CMD_VAR_SET;
+        obj->txPacket.data[2] = (uint8_t)filter;
+        obj->txPacket.len = 3u;
+
+        RadarIQ_sendPacket(obj);
+
+        if (RADARIQ_CMD_MOVING_FILT != RadarIQ_pollResponse(obj))
+        {
+            ret = RADARIQ_RETURN_VAL_ERR;    
+        }
     }
 
     return ret;
@@ -977,7 +960,8 @@ RadarIQReturnVal_t RadarIQ_setMovingFilter(const RadarIQHandle_t obj, RadarIQMov
  */
 RadarIQReturnVal_t RadarIQ_getPointDensity(const RadarIQHandle_t obj, RadarIQPointDensity_t * const density)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
+    RADARIQ_ASSERT(NULL != density);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
@@ -1009,26 +993,27 @@ RadarIQReturnVal_t RadarIQ_getPointDensity(const RadarIQHandle_t obj, RadarIQPoi
  */
 RadarIQReturnVal_t RadarIQ_setPointDensity(const RadarIQHandle_t obj, RadarIQPointDensity_t density)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
     if ((RADARIQ_DENSITY_NORMAL > density) || (RADARIQ_DENSITY_VERY_DENSE < density))
     {
-        ret = RADARIQ_RETURN_VAL_ERR;
-        return ret;    
+        ret = RADARIQ_RETURN_VAL_ERR;  
     }
-
-    obj->txPacket.data[0] = RADARIQ_CMD_PNT_DENSITY;
-    obj->txPacket.data[1] = RADARIQ_CMD_VAR_SET;
-    obj->txPacket.data[2] = (uint8_t)density;
-    obj->txPacket.len = 3u;
-
-    RadarIQ_sendPacket(obj);
-
-    if (RADARIQ_CMD_PNT_DENSITY != RadarIQ_pollResponse(obj))
+    else
     {
-        ret = RADARIQ_RETURN_VAL_ERR;    
+        obj->txPacket.data[0] = RADARIQ_CMD_PNT_DENSITY;
+        obj->txPacket.data[1] = RADARIQ_CMD_VAR_SET;
+        obj->txPacket.data[2] = (uint8_t)density;
+        obj->txPacket.len = 3u;
+
+        RadarIQ_sendPacket(obj);
+
+        if (RADARIQ_CMD_PNT_DENSITY != RadarIQ_pollResponse(obj))
+        {
+            ret = RADARIQ_RETURN_VAL_ERR;    
+        }
     }
 
     return ret;
@@ -1044,7 +1029,8 @@ RadarIQReturnVal_t RadarIQ_setPointDensity(const RadarIQHandle_t obj, RadarIQPoi
  */
 RadarIQReturnVal_t RadarIQ_getSensitivity(const RadarIQHandle_t obj, uint8_t * const sensitivity)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
+    RADARIQ_ASSERT(NULL != sensitivity);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
@@ -1076,7 +1062,7 @@ RadarIQReturnVal_t RadarIQ_getSensitivity(const RadarIQHandle_t obj, uint8_t * c
  */
 RadarIQReturnVal_t RadarIQ_setSensitivity(const RadarIQHandle_t obj, uint8_t sensitivity)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
@@ -1112,7 +1098,9 @@ RadarIQReturnVal_t RadarIQ_setSensitivity(const RadarIQHandle_t obj, uint8_t sen
  */
 RadarIQReturnVal_t RadarIQ_getHeightFilter(const RadarIQHandle_t obj, int16_t * const min, int16_t * const max)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
+    RADARIQ_ASSERT(NULL != min);
+    RADARIQ_ASSERT(NULL != max);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
     
@@ -1139,14 +1127,14 @@ RadarIQReturnVal_t RadarIQ_getHeightFilter(const RadarIQHandle_t obj, int16_t * 
  * Sends a ::RADARIQ_CMD_HEIGHT_FILT packet to the device to set the height filter settings.
  *
  * @param obj The RadarIQ object handle returned from RadarIQ_init()
- * @param min The minimum height setting into apply
- * @param max The minimum height setting into apply
+ * @param min The minimum height setting to apply
+ * @param max The minimum height setting to apply
  * 
  * @return ::RADARIQ_RETURN_VAL_OK on success, ::RADARIQ_RETURN_VAL_ERR if no valid response was received
  */
 RadarIQReturnVal_t RadarIQ_setHeightFilter(const RadarIQHandle_t obj, int16_t min, int16_t max)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
@@ -1182,7 +1170,7 @@ RadarIQReturnVal_t RadarIQ_setHeightFilter(const RadarIQHandle_t obj, int16_t mi
  */
 RadarIQReturnVal_t RadarIQ_sceneCalibrate(const RadarIQHandle_t obj)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
     
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_ERR;
     
@@ -1192,9 +1180,9 @@ RadarIQReturnVal_t RadarIQ_sceneCalibrate(const RadarIQHandle_t obj)
 
     RadarIQ_sendPacket(obj);
     
-    // Poll for acknowledgment message
+    // Poll for acknowledegment message
     // Several other messages are expected to be received before the ack
-    for (uint32_t poll = 0u; poll < 50u; poll++)
+    for (uint32_t poll = 0u; poll < RADARIQ_SCENE_CALIB_POLLS; poll++)
     {
         if (RADARIQ_CMD_SCENE_CALIB == RadarIQ_pollResponse(obj))
         {
@@ -1216,7 +1204,8 @@ RadarIQReturnVal_t RadarIQ_sceneCalibrate(const RadarIQHandle_t obj)
  */
 RadarIQReturnVal_t RadarIQ_getObjectSize(const RadarIQHandle_t obj, uint8_t * const size)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
+    RADARIQ_ASSERT(NULL != size);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
@@ -1249,7 +1238,7 @@ RadarIQReturnVal_t RadarIQ_getObjectSize(const RadarIQHandle_t obj, uint8_t * co
  */
 RadarIQReturnVal_t RadarIQ_setObjectSize(const RadarIQHandle_t obj, uint8_t size)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
@@ -1288,7 +1277,7 @@ RadarIQReturnVal_t RadarIQ_setObjectSize(const RadarIQHandle_t obj, uint8_t size
  */
 static RadarIQCommand_t RadarIQ_pollResponse(const RadarIQHandle_t obj)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
 
     RadarIQCommand_t response;
 
@@ -1325,7 +1314,7 @@ static RadarIQCommand_t RadarIQ_pollResponse(const RadarIQHandle_t obj)
  */
 static RadarIQCommand_t RadarIQ_parsePacket(const RadarIQHandle_t obj)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
     
     const RadarIQCommand_t command = (RadarIQCommand_t)obj->rxPacket.data[0];
     RadarIQCommand_t ret = command;
@@ -1359,37 +1348,34 @@ static RadarIQCommand_t RadarIQ_parsePacket(const RadarIQHandle_t obj)
     }
     case RADARIQ_CMD_PNT_CLOUD_FRAME:
     {
-        //obj->logCallback("parsePacket: Point Cloud");
         RadarIQ_parsePointCloud(obj);
         break;
     }
     case RADARIQ_CMD_OBJ_TRACKING_FRAME:
     {
-        //obj->logCallback("parsePacket: Object Tracking");
         RadarIQ_parseObjectTracking(obj);
         break;
     }
     case RADARIQ_CMD_PROC_STATS:
     {
-        //obj->logCallback("parsePacket: Processing Stats");
         RadarIQ_parseProcessingStats(obj);
         break;
     }
     case RADARIQ_CMD_POINTCLOUD_STATS:
     {
-        //obj->logCallback("parsePacket: Point Cloud Stats");
         RadarIQ_parsePointCloudStats(obj);
         break;    
     }
     case RADARIQ_CMD_POWER_STATUS:
     {
-        //obj->logCallback("parsePacket: Power status");
         RadarIQ_parsePowerStatus(obj);
         break;    
     }
     default:
     {
+#if RADARIQ_DEBUG_ENABLE == 1
         obj->logCallback("parsePacket: Unknown command");
+#endif
         ret = RADARIQ_CMD_UNKNOWN;
         break;
     }
@@ -1516,7 +1502,7 @@ static void RadarIQ_parseObjectTracking(const RadarIQHandle_t obj)
  */
 static void RadarIQ_parseMessage(const RadarIQHandle_t obj)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
     
     char strLog[256];
     char strMsgType[16];
@@ -1557,7 +1543,7 @@ static void RadarIQ_parseMessage(const RadarIQHandle_t obj)
  */
 static void RadarIQ_parseProcessingStats(const RadarIQHandle_t obj)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
     
     memcpy((void*)&obj->stats.processing, (void*)&obj->rxPacket.data[2], 28);
     memcpy((void*)&obj->stats.temperature, (void*)&obj->rxPacket.data[30], 20);
@@ -1570,7 +1556,7 @@ static void RadarIQ_parseProcessingStats(const RadarIQHandle_t obj)
  */
 static void RadarIQ_parsePointCloudStats(const RadarIQHandle_t obj)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
     
     memcpy((void*)&obj->stats.pointcloud, (void*)&obj->rxPacket.data[2], 26);    
 }
@@ -1582,7 +1568,7 @@ static void RadarIQ_parsePointCloudStats(const RadarIQHandle_t obj)
  */
 static void RadarIQ_parsePowerStatus(const RadarIQHandle_t obj)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
     
     obj->isPowerGood = !obj->rxPacket.data[2];
 }
@@ -1594,7 +1580,7 @@ static void RadarIQ_parsePowerStatus(const RadarIQHandle_t obj)
  */
 static void RadarIQ_sendPacket(const RadarIQHandle_t obj)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
 
     // Calculate CRC
     uint16_t const crc = RadarIQ_getCrc16Ccitt(obj->txPacket.data, obj->txPacket.len);
@@ -1628,7 +1614,7 @@ static void RadarIQ_sendPacket(const RadarIQHandle_t obj)
  */
 static RadarIQReturnVal_t RadarIQ_decodePacket(const RadarIQHandle_t obj)
 {
-    radariq_assert(NULL != obj);
+    RADARIQ_ASSERT(NULL != obj);
 
     bool retval;
     obj->rxPacket.len = 0u;
@@ -1687,7 +1673,7 @@ static RadarIQReturnVal_t RadarIQ_decodePacket(const RadarIQHandle_t obj)
  */
 static void RadarIQ_encodeHelper(const RadarIQHandle_t obj, uint8_t const databyte)
 {
-    radariq_assert(obj->txBuffer.len < (RADARIQ_TX_BUFFER_SIZE - 2u));
+    RADARIQ_ASSERT(obj->txBuffer.len < (RADARIQ_TX_BUFFER_SIZE - 2u));
 
     switch (databyte)
     {

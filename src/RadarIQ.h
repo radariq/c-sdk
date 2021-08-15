@@ -50,10 +50,14 @@ extern "C" {
 #define RADARIQ_MAX_SENSITIVITY            9u        ///< Maximum sensitivity level in point-cloud mode
 #define RADARIQ_MAX_OBJ_SIZE               4u        ///< Maximum target object size in object-tracking mode
 
+/* Debug */
+#define RADARIQ_DEBUG_ENABLE               0         ///< Enables any debug messages printed from RadarIQ.c if set to 1  
+
 /**
  * Assertion macro - redefine if necessary or remove at your own risk
  */
-#define radariq_assert(expr)    assert(expr)
+#define RADARIQ_ASSERT(expr)    assert(expr)
+
 
 //===============================================================================================//
 // DATA TYPES
@@ -94,12 +98,22 @@ typedef enum
 } RadarIQCommand_t;
 
 /**
+ * UART packet command variants
+ */
+typedef enum
+{
+    RADARIQ_CMD_VAR_REQUEST     = 0,    ///< Requests a response from the device
+    RADARIQ_CMD_VAR_RESPONSE    = 1,    ///< A response sent from the device
+    RADARIQ_CMD_VAR_SET         = 2     ///< Sets a parameter of the device
+} RadarIQCommandVariant_t;
+
+/**
  * Return values for functions
  */
 typedef enum
 {
     RADARIQ_RETURN_VAL_OK = 0,             ///< Function excecuted ok
-    RADARIQ_RETURN_VAL_WARNING = 1,        ///< Value(s) passed to function were out of range and limitted
+    RADARIQ_RETURN_VAL_WARNING = 1,        ///< Value(s) passed to function were out of range and limited
     RADARIQ_RETURN_VAL_ERR = 2             ///< Function returned an error
 } RadarIQReturnVal_t;
 
@@ -190,12 +204,47 @@ typedef struct
 } RadarIQDataObjectTracking_t;
 
 /**
- * Frame data - only one type can be accessed at one time
+ * Types of messages sent from the device in a message packet
+ */
+typedef enum
+{
+    RADARIQ_MSG_TYPE_TEMPORARY     = 0,        ///< Temporary messages not intended to be used permanently
+    RADARIQ_MSG_TYPE_DEBUG         = 1,        ///< Debug information about an operation
+    RADARIQ_MSG_TYPE_INFO          = 2,        ///< General information about an operation
+    RADARIQ_MSG_TYPE_WARNING       = 3,        ///< An operation was completed but not as expected
+    RADARIQ_MSG_TYPE_ERROR         = 4,        ///< An operation was not completed due to an error
+    RADARIQ_MSG_TYPE_SUCCESS       = 5         ///< An operation completed successfully
+} RadarIQMsgType_t;
+
+/**
+ * Types of message codes sent from the device in a message packet
+ */
+typedef enum
+{
+    RADARIQ_MSG_CODE_GENERAL            = 0,    ///< General debug messages with no specific code
+    RADARIQ_MSG_CODE_FRAMERATE_TOO_HIGH = 1,    ///< Requested frame rate was too high and limited
+    RADARIQ_MSG_CODE_CALIB_FAILED       = 2,    ///< Device could not be calibrated
+    RADARIQ_MSG_CODE_IWR_COMMS_TIMEOUT  = 3,    ///<
+    RADARIQ_MSG_CODE_INVALID_COMMAND    = 100,  ///<
+    RADARIQ_MSG_CODE_INALIVD_VALUE      = 101,  ///< 
+    RADARIQ_MSG_CODE_PACKET_OVERFLOW    = 102,  ///<  
+} RadarIQMsgCode_t;
+
+typedef struct
+{
+    RadarIQMsgType_t type;
+    uint8_t code;                               ///< Warning/error code or 0 for general debug messages     
+    char message[RADARIQ_MAX_MESSAGE_STRING];   ///< Accesses the string from message packets
+} RadarIQMsg_t;
+
+/**
+ * Data returned from device - only one type can be accessed at one time
  */
 typedef union
 {
     RadarIQDataPointCloud_t pointCloud;                ///< Accesses the point-cloud data struct
     RadarIQDataObjectTracking_t objectTracking;        ///< Accesses the object-tracking data struct
+
 } RadarIQData_t;
 
 /**
@@ -315,7 +364,7 @@ RadarIQCommand_t RadarIQ_readSerial(const RadarIQHandle_t obj);
 
 /* Debug & info */
 uint32_t RadarIQ_getMemoryUsage(void);
-uint8_t RadarIQ_getDataBuffer(const RadarIQHandle_t obj, uint8_t* dest);
+uint16_t RadarIQ_getDataBuffer(const RadarIQHandle_t obj, uint8_t* dest);
 
 /* Data & stats getters */
 void RadarIQ_getData(const RadarIQHandle_t obj, RadarIQData_t * dest);
