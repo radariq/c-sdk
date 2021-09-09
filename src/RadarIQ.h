@@ -35,9 +35,10 @@ extern "C" {
 #define RADARIQ_TX_BUFFER_SIZE             32u       ///< Tx buffer size in bytes
 #define RADARIQ_RX_BUFFER_SIZE             256u      ///< Rx buffer size in bytes
 
-/* Frame data storage sizes */
+/* Data storage sizes */
 #define RADARIQ_MAX_POINTCLOUD             64u       ///< Maximum number of point-cloud points to store in one frame
 #define RADARIQ_MAX_OBJECTS                16u       ///< Maximum number of detected objects to store in one frame
+#define RADARIQ_VERSION_NAME_LEN           20u       ///< Maximum length of string for firmware version names
 
 /* Limits */
 #define RADARIQ_MAX_MESSAGE_STRING         200u      ///< Maximum string length of the message in message packets
@@ -224,10 +225,9 @@ typedef enum
     RADARIQ_MSG_CODE_GENERAL            = 0,    ///< General debug messages with no specific code
     RADARIQ_MSG_CODE_FRAMERATE_TOO_HIGH = 1,    ///< Requested frame rate was too high and limited
     RADARIQ_MSG_CODE_CALIB_FAILED       = 2,    ///< Device could not be calibrated
-    RADARIQ_MSG_CODE_IWR_COMMS_TIMEOUT  = 3,    ///<
-    RADARIQ_MSG_CODE_INVALID_COMMAND    = 100,  ///<
-    RADARIQ_MSG_CODE_INALIVD_VALUE      = 101,  ///< 
-    RADARIQ_MSG_CODE_PACKET_OVERFLOW    = 102,  ///<  
+    RADARIQ_MSG_CODE_IWR_COMMS_TIMEOUT  = 3,    ///< Communications with IWR timed out
+    RADARIQ_MSG_CODE_INVALID_COMMAND    = 100,  ///< Invalid UART command sent to the device
+    RADARIQ_MSG_CODE_INVALID_VALUE      = 101,  ///< Invalid parameter in UART command sent to the device
 } RadarIQMsgCode_t;
 
 typedef struct
@@ -318,10 +318,10 @@ typedef struct
  */
 typedef struct
 {
-    uint8_t major;                  ///< Major version
-    uint8_t minor;                  ///< Minor version
-    uint16_t build;                 ///< Build version
-    char name[20];                  ///< Application name
+    uint8_t major;                          ///< Major version
+    uint8_t minor;                          ///< Minor version
+    uint16_t build;                         ///< Build version
+    char name[RADARIQ_VERSION_NAME_LEN];    ///< Application name
 } RadarIQVersionIWR_t;
 
 /**
@@ -378,7 +378,7 @@ void RadarIQ_start(const RadarIQHandle_t obj, const uint8_t numFrames);
 RadarIQReturnVal_t RadarIQ_reset(const RadarIQHandle_t obj, const RadarIQResetCode_t code);
 RadarIQReturnVal_t RadarIQ_save(const RadarIQHandle_t obj);
 RadarIQReturnVal_t RadarIQ_getVersion(const RadarIQHandle_t obj, RadarIQVersion_t * const firmware, RadarIQVersion_t * const hardware);
-RadarIQReturnVal_t RadarIQ_getRadarVersions(const RadarIQHandle_t obj, RadarIQVersionIWR_t * const sbl, RadarIQVersionIWR_t * const app1, RadarIQVersionIWR_t * const app2);
+RadarIQReturnVal_t RadarIQ_getRadarVersions(const RadarIQHandle_t obj, const RadarIQCaptureMode_t mode, RadarIQVersionIWR_t * const version);
 RadarIQReturnVal_t RadarIQ_getSerialNumber(const RadarIQHandle_t obj, RadarIQSerialNo_t * const serial);
 RadarIQReturnVal_t RadarIQ_getFrameRate(const RadarIQHandle_t obj, uint8_t * const rate);
 RadarIQReturnVal_t RadarIQ_setFrameRate(const RadarIQHandle_t obj, uint8_t rate);

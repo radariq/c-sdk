@@ -488,38 +488,43 @@ RadarIQReturnVal_t RadarIQ_getVersion(const RadarIQHandle_t obj, RadarIQVersion_
  * Sends a ::RADARIQ_CMD_IWR_VERSION packet to the device to get the firmware versions running on the IWR.
  *
  * @param obj The RadarIQ object handle returned from RadarIQ_init()
- * @param sbl Pointer to a RadarIQVersionIWR_t struct to copy the secondary bootloader firmware version information into
- * @param app1 Pointer to a RadarIQVersionIWR_t struct to copy the first application firmware version information into
- * @param app2 Pointer to a RadarIQVersionIWR_t struct to copy the second application firmware version information into
+ * @param mode Capture mode to get the firmware version of (::RADARIQ_MODE_POINT_CLOUD or ::RADARIQ_MODE_OBJECT_TRACKING)
+ * @param version Pointer to a RadarIQVersionIWR_t struct to copy the firmware version information into
  * 
  * @return ::RADARIQ_RETURN_VAL_OK on success, ::RADARIQ_RETURN_VAL_ERR if no valid response was received
  */
-RadarIQReturnVal_t RadarIQ_getRadarVersions(const RadarIQHandle_t obj, RadarIQVersionIWR_t * const sbl,
-        RadarIQVersionIWR_t * const app1, RadarIQVersionIWR_t * const app2)
+RadarIQReturnVal_t RadarIQ_getRadarVersions(const RadarIQHandle_t obj, const RadarIQCaptureMode_t mode,
+    RadarIQVersionIWR_t * const version)
 {
     RADARIQ_ASSERT(NULL != obj);
-    RADARIQ_ASSERT(NULL != sbl);
-    RADARIQ_ASSERT(NULL != app1);
-    RADARIQ_ASSERT(NULL != app2);
+    RADARIQ_ASSERT(NULL != version);
 
     RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
 
-    obj->txPacket.data[0] = RADARIQ_CMD_IWR_VERSION;
-    obj->txPacket.data[1] = RADARIQ_CMD_VAR_REQUEST;
-    obj->txPacket.len = 2u;
-
-    RadarIQ_sendPacket(obj);
-
-    if (RADARIQ_CMD_IWR_VERSION == RadarIQ_pollResponse(obj))
-    {    
-        memcpy((void*)sbl, (void*)&obj->rxPacket.data[2], 4);
-        memset(sbl->name, 0, 20);    
-        memcpy((void*)app1, (void*)&obj->rxPacket.data[6], sizeof(RadarIQVersionIWR_t));
-        memcpy((void*)app2, (void*)&obj->rxPacket.data[30], sizeof(RadarIQVersionIWR_t));
+    if ((RADARIQ_MODE_POINT_CLOUD > mode) || (RADARIQ_MODE_OBJECT_TRACKING < mode))
+    {
+        ret = RADARIQ_RETURN_VAL_ERR; 
     }
     else
     {
-        ret = RADARIQ_RETURN_VAL_ERR;
+        obj->txPacket.data[0] = RADARIQ_CMD_IWR_VERSION;
+        obj->txPacket.data[1] = RADARIQ_CMD_VAR_REQUEST;
+        obj->txPacket.data[2] = (uint8_t)mode;
+        obj->txPacket.len = 3u;
+
+        RadarIQ_sendPacket(obj);
+
+        if (RADARIQ_CMD_IWR_VERSION == RadarIQ_pollResponse(obj))
+        {    
+            memcpy((void*)version->name,  (void*)&obj->rxPacket.data[3], RADARIQ_VERSION_NAME_LEN);   
+            version->major = obj->rxPacket.data[RADARIQ_VERSION_NAME_LEN + 3u];
+            version->minor = obj->rxPacket.data[RADARIQ_VERSION_NAME_LEN + 4u];
+            version->build = RadarIQ_pack16Unsigned(&obj->rxPacket.data[RADARIQ_VERSION_NAME_LEN + 5u]);
+        }
+        else
+        {
+            ret = RADARIQ_RETURN_VAL_ERR;
+        }
     }
 
     return ret;
