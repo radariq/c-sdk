@@ -7,6 +7,7 @@ var annotated_dup =
     [ "RadarIQDataObjectTracking_t", "struct_radar_i_q_data_object_tracking__t.html", "struct_radar_i_q_data_object_tracking__t" ],
     [ "RadarIQDataPoint_t", "struct_radar_i_q_data_point__t.html", "struct_radar_i_q_data_point__t" ],
     [ "RadarIQDataPointCloud_t", "struct_radar_i_q_data_point_cloud__t.html", "struct_radar_i_q_data_point_cloud__t" ],
+    [ "RadarIQMsg_t", "struct_radar_i_q_msg__t.html", "struct_radar_i_q_msg__t" ],
     [ "RadarIQPointcloudStats_t", "struct_radar_i_q_pointcloud_stats__t.html", "struct_radar_i_q_pointcloud_stats__t" ],
     [ "RadarIQProcessingStats_t", "struct_radar_i_q_processing_stats__t.html", "struct_radar_i_q_processing_stats__t" ],
     [ "RadarIQRxBuffer_t", "struct_radar_i_q_rx_buffer__t.html", "struct_radar_i_q_rx_buffer__t" ],

@@ -4,6 +4,7 @@ var _radar_i_q_8h =
     [ "RadarIQDataPointCloud_t", "struct_radar_i_q_data_point_cloud__t.html", "struct_radar_i_q_data_point_cloud__t" ],
     [ "RadarIQDataObject_t", "struct_radar_i_q_data_object__t.html", "struct_radar_i_q_data_object__t" ],
     [ "RadarIQDataObjectTracking_t", "struct_radar_i_q_data_object_tracking__t.html", "struct_radar_i_q_data_object_tracking__t" ],
+    [ "RadarIQMsg_t", "struct_radar_i_q_msg__t.html", "struct_radar_i_q_msg__t" ],
     [ "RadarIQData_t", "union_radar_i_q_data__t.html", "union_radar_i_q_data__t" ],
     [ "RadarIQChipTemperatures_t", "struct_radar_i_q_chip_temperatures__t.html", "struct_radar_i_q_chip_temperatures__t" ],
     [ "RadarIQProcessingStats_t", "struct_radar_i_q_processing_stats__t.html", "struct_radar_i_q_processing_stats__t" ],
@@ -13,7 +14,8 @@ var _radar_i_q_8h =
     [ "RadarIQVersionIWR_t", "struct_radar_i_q_version_i_w_r__t.html", "struct_radar_i_q_version_i_w_r__t" ],
     [ "RadarIQSerialNo_t", "struct_radar_i_q_serial_no__t.html", "struct_radar_i_q_serial_no__t" ],
     [ "RadarIQUartData_t", "struct_radar_i_q_uart_data__t.html", "struct_radar_i_q_uart_data__t" ],
-    [ "radariq_assert", "_radar_i_q_8h.html#af56d98c64ecd39e7e6cc54471ee5ac9a", null ],
+    [ "RADARIQ_ASSERT", "_radar_i_q_8h.html#a2c491ebed17552b79be4a97890497c84", null ],
+    [ "RADARIQ_DEBUG_ENABLE", "_radar_i_q_8h.html#a4fc23344049dea1a76f5678ab95f2ece", null ],
     [ "RADARIQ_MAX_ANGLE_FILT", "_radar_i_q_8h.html#a19949445e135e7de810c9d271d11b048", null ],
     [ "RADARIQ_MAX_DIST_FILT", "_radar_i_q_8h.html#aa49068a65f332810626e8fd82875b2f5", null ],
     [ "RADARIQ_MAX_FRAME_RATE", "_radar_i_q_8h.html#ab7052655223d9bcb51037f357fdadea8", null ],
@@ -27,6 +29,7 @@ var _radar_i_q_8h =
     [ "RADARIQ_MIN_FRAME_RATE", "_radar_i_q_8h.html#a68d88445fdb780cb08ef066a270986b4", null ],
     [ "RADARIQ_RX_BUFFER_SIZE", "_radar_i_q_8h.html#acaf7ecfe3f113d78a52aeafd82448eb7", null ],
     [ "RADARIQ_TX_BUFFER_SIZE", "_radar_i_q_8h.html#acec1dcfafbda1b457b9025e9de7e86ad", null ],
+    [ "RADARIQ_VERSION_NAME_LEN", "_radar_i_q_8h.html#a1b950f17a992144d8188958d8f3180de", null ],
     [ "RadarIQ_t", "_radar_i_q_8h.html#ada8e984837f273e2124189ebcc7d2a00", null ],
     [ "RadarIQHandle_t", "_radar_i_q_8h.html#aed45e60c5eebea06431bbceab1356a62", null ],
     [ "RadarIQCaptureMode_t", "_radar_i_q_8h.html#a771bf4777efe1d82b4ccc87ebefcaaf5", [
@@ -62,9 +65,30 @@ var _radar_i_q_8h =
       [ "RADARIQ_CMD_POINTCLOUD_STATS", "_radar_i_q_8h.html#a15802590784cc0821ff3b5fa3ade4793a066e2d682311a75b9fa02f16c496caf3", null ],
       [ "RADARIQ_CMD_POWER_STATUS", "_radar_i_q_8h.html#a15802590784cc0821ff3b5fa3ade4793a0bdacde3e55598a44d4e114ee2db3774", null ]
     ] ],
+    [ "RadarIQCommandVariant_t", "_radar_i_q_8h.html#aec427306d3faa22244147dd32a3b81ca", [
+      [ "RADARIQ_CMD_VAR_REQUEST", "_radar_i_q_8h.html#aec427306d3faa22244147dd32a3b81caa78c4cb4e683109e5df518f3ca503f491", null ],
+      [ "RADARIQ_CMD_VAR_RESPONSE", "_radar_i_q_8h.html#aec427306d3faa22244147dd32a3b81caa42ec431f84ccf787cfb9938d090d0edf", null ],
+      [ "RADARIQ_CMD_VAR_SET", "_radar_i_q_8h.html#aec427306d3faa22244147dd32a3b81caa0befa335e28cbf87ada1c34dd7e987cd", null ]
+    ] ],
     [ "RadarIQMovingFilterMode_t", "_radar_i_q_8h.html#abb654295c43e01c1a3a6631fcda3f821", [
       [ "RADARIQ_MOVING_BOTH", "_radar_i_q_8h.html#abb654295c43e01c1a3a6631fcda3f821aed66c91bce97969ec5faa163dcd44cc0", null ],
       [ "RADARIQ_MOVING_OBJECTS_ONLY", "_radar_i_q_8h.html#abb654295c43e01c1a3a6631fcda3f821afdc195cf2149c50a48b589ae0df23dcb", null ]
+    ] ],
+    [ "RadarIQMsgCode_t", "_radar_i_q_8h.html#a5ed08faa10779990804d6c9c1d31a52f", [
+      [ "RADARIQ_MSG_CODE_GENERAL", "_radar_i_q_8h.html#a5ed08faa10779990804d6c9c1d31a52fa6fb8eb8d038e90008bb83362d07434a2", null ],
+      [ "RADARIQ_MSG_CODE_FRAMERATE_TOO_HIGH", "_radar_i_q_8h.html#a5ed08faa10779990804d6c9c1d31a52fa18e7a11d12b83e8868f3b52caf25d802", null ],
+      [ "RADARIQ_MSG_CODE_CALIB_FAILED", "_radar_i_q_8h.html#a5ed08faa10779990804d6c9c1d31a52fa5fba30e262cbc770dbc6cd46d7e60a7d", null ],
+      [ "RADARIQ_MSG_CODE_IWR_COMMS_TIMEOUT", "_radar_i_q_8h.html#a5ed08faa10779990804d6c9c1d31a52fa03af7e309327ebd9f2f4dbdb5a03f32a", null ],
+      [ "RADARIQ_MSG_CODE_INVALID_COMMAND", "_radar_i_q_8h.html#a5ed08faa10779990804d6c9c1d31a52fad81bbd91d0b17b0a1ff0d229a1db78b0", null ],
+      [ "RADARIQ_MSG_CODE_INVALID_VALUE", "_radar_i_q_8h.html#a5ed08faa10779990804d6c9c1d31a52fa530c9b8477c6887feca9b2ab022c25eb", null ]
+    ] ],
+    [ "RadarIQMsgType_t", "_radar_i_q_8h.html#a997c582f9a8797996fbcc0970a95d111", [
+      [ "RADARIQ_MSG_TYPE_TEMPORARY", "_radar_i_q_8h.html#a997c582f9a8797996fbcc0970a95d111a4f91d07020cbef5ee5c41d69a3da8a6d", null ],
+      [ "RADARIQ_MSG_TYPE_DEBUG", "_radar_i_q_8h.html#a997c582f9a8797996fbcc0970a95d111a939cf58d29cc514ff38b2610598f81e7", null ],
+      [ "RADARIQ_MSG_TYPE_INFO", "_radar_i_q_8h.html#a997c582f9a8797996fbcc0970a95d111aa4acba5a8dba321927caa46f18f925fc", null ],
+      [ "RADARIQ_MSG_TYPE_WARNING", "_radar_i_q_8h.html#a997c582f9a8797996fbcc0970a95d111a866da776c92a3dc646d2e35a38cc3415", null ],
+      [ "RADARIQ_MSG_TYPE_ERROR", "_radar_i_q_8h.html#a997c582f9a8797996fbcc0970a95d111a4cdbe888da780df766f08f8364be2605", null ],
+      [ "RADARIQ_MSG_TYPE_SUCCESS", "_radar_i_q_8h.html#a997c582f9a8797996fbcc0970a95d111a34159ad49ea0e089b464d6ecfb05d41b", null ]
     ] ],
     [ "RadarIQPointDensity_t", "_radar_i_q_8h.html#a3f85be3ddb4db6e62228ae1e699219af", [
       [ "RADARIQ_DENSITY_NORMAL", "_radar_i_q_8h.html#a3f85be3ddb4db6e62228ae1e699219afa02bbb005cfd528365cdbb69e30d587d7", null ],
@@ -83,7 +107,7 @@ var _radar_i_q_8h =
     [ "RadarIQ_getAngleFilter", "_radar_i_q_8h.html#a7834f253c39273b7cf480b4977d7b268", null ],
     [ "RadarIQ_getChipTemperatures", "_radar_i_q_8h.html#a649b02831e5299d81638c8d097493c39", null ],
     [ "RadarIQ_getData", "_radar_i_q_8h.html#a2cb326471b57bd2fcb94912d41f05b6e", null ],
-    [ "RadarIQ_getDataBuffer", "_radar_i_q_8h.html#aff2d12b19597252d766b788c63d3526d", null ],
+    [ "RadarIQ_getDataBuffer", "_radar_i_q_8h.html#ae0a5bececd801afa311f55f540ab8944", null ],
     [ "RadarIQ_getDistanceFilter", "_radar_i_q_8h.html#a8fbbe20ae09efc90dc675424fb52e571", null ],
     [ "RadarIQ_getFrameRate", "_radar_i_q_8h.html#a223f5b4a9f65f7df3c54b02635a9c6f7", null ],
     [ "RadarIQ_getHeightFilter", "_radar_i_q_8h.html#aa94fafe8f44596cfd66b720492870bc8", null ],
@@ -94,7 +118,7 @@ var _radar_i_q_8h =
     [ "RadarIQ_getPointCloudStats", "_radar_i_q_8h.html#a50f4b7b456fb03871fca1e763ccc7c0e", null ],
     [ "RadarIQ_getPointDensity", "_radar_i_q_8h.html#af79af88d5c18e6bee6ee3c2d70041eff", null ],
     [ "RadarIQ_getProcessingStats", "_radar_i_q_8h.html#a190ae99009add2e51843324ee9d399ea", null ],
-    [ "RadarIQ_getRadarVersions", "_radar_i_q_8h.html#a0803d3514663fb7cbf6136507d4bdfdc", null ],
+    [ "RadarIQ_getRadarVersions", "_radar_i_q_8h.html#a7fabef5ff2513afeab48c70edf07de70", null ],
     [ "RadarIQ_getSensitivity", "_radar_i_q_8h.html#a2232b33afafc7b42b988a0c3028a2ab9", null ],
     [ "RadarIQ_getSerialNumber", "_radar_i_q_8h.html#af8beec0ed3b8db0408f422ad2880b58d", null ],
     [ "RadarIQ_getVersion", "_radar_i_q_8h.html#a670834e759ccd4f1427923ba06be62a6", null ],

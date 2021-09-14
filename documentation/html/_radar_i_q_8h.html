@@ -114,6 +114,8 @@ Data Structures</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_radar_i_q_data_object_tracking__t.html">RadarIQDataObjectTracking_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_radar_i_q_msg__t.html">RadarIQMsg_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">union &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="union_radar_i_q_data__t.html">RadarIQData_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_radar_i_q_chip_temperatures__t.html">RadarIQChipTemperatures_t</a></td></tr>
@@ -147,6 +149,9 @@ Macros</h2></td></tr>
 <tr class="memitem:a4003b188df3e130ad7adfc50a320c91e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8h.html#a4003b188df3e130ad7adfc50a320c91e">RADARIQ_MAX_OBJECTS</a>&#160;&#160;&#160;16u</td></tr>
 <tr class="memdesc:a4003b188df3e130ad7adfc50a320c91e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of detected objects to store in one frame.  <a href="_radar_i_q_8h.html#a4003b188df3e130ad7adfc50a320c91e">More...</a><br /></td></tr>
 <tr class="separator:a4003b188df3e130ad7adfc50a320c91e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b950f17a992144d8188958d8f3180de"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8h.html#a1b950f17a992144d8188958d8f3180de">RADARIQ_VERSION_NAME_LEN</a>&#160;&#160;&#160;20u</td></tr>
+<tr class="memdesc:a1b950f17a992144d8188958d8f3180de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum length of string for firmware version names.  <a href="_radar_i_q_8h.html#a1b950f17a992144d8188958d8f3180de">More...</a><br /></td></tr>
+<tr class="separator:a1b950f17a992144d8188958d8f3180de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac04b0f2d39c9fe5c40bfda24c5b61cc6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8h.html#ac04b0f2d39c9fe5c40bfda24c5b61cc6">RADARIQ_MAX_MESSAGE_STRING</a>&#160;&#160;&#160;200u</td></tr>
 <tr class="memdesc:ac04b0f2d39c9fe5c40bfda24c5b61cc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum string length of the message in message packets.  <a href="_radar_i_q_8h.html#ac04b0f2d39c9fe5c40bfda24c5b61cc6">More...</a><br /></td></tr>
 <tr class="separator:ac04b0f2d39c9fe5c40bfda24c5b61cc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -174,8 +179,12 @@ Macros</h2></td></tr>
 <tr class="memitem:a9dcf802bb44c635426fa526a884e0df3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8h.html#a9dcf802bb44c635426fa526a884e0df3">RADARIQ_MAX_OBJ_SIZE</a>&#160;&#160;&#160;4u</td></tr>
 <tr class="memdesc:a9dcf802bb44c635426fa526a884e0df3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum target object size in object-tracking mode.  <a href="_radar_i_q_8h.html#a9dcf802bb44c635426fa526a884e0df3">More...</a><br /></td></tr>
 <tr class="separator:a9dcf802bb44c635426fa526a884e0df3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af56d98c64ecd39e7e6cc54471ee5ac9a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8h.html#af56d98c64ecd39e7e6cc54471ee5ac9a">radariq_assert</a>(expr)&#160;&#160;&#160;assert(expr)</td></tr>
-<tr class="separator:af56d98c64ecd39e7e6cc54471ee5ac9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fc23344049dea1a76f5678ab95f2ece"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8h.html#a4fc23344049dea1a76f5678ab95f2ece">RADARIQ_DEBUG_ENABLE</a>&#160;&#160;&#160;0</td></tr>
+<tr class="memdesc:a4fc23344049dea1a76f5678ab95f2ece"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables any debug messages printed from <a class="el" href="_radar_i_q_8c.html">RadarIQ.c</a> if set to 1 <br  />
+  <a href="_radar_i_q_8h.html#a4fc23344049dea1a76f5678ab95f2ece">More...</a><br /></td></tr>
+<tr class="separator:a4fc23344049dea1a76f5678ab95f2ece"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c491ebed17552b79be4a97890497c84"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8h.html#a2c491ebed17552b79be4a97890497c84">RADARIQ_ASSERT</a>(expr)&#160;&#160;&#160;assert(expr)</td></tr>
+<tr class="separator:a2c491ebed17552b79be4a97890497c84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -223,6 +232,11 @@ Enumerations</h2></td></tr>
 <br />
  }</td></tr>
 <tr class="separator:a15802590784cc0821ff3b5fa3ade4793"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec427306d3faa22244147dd32a3b81ca"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8h.html#aec427306d3faa22244147dd32a3b81ca">RadarIQCommandVariant_t</a> { <a class="el" href="_radar_i_q_8h.html#aec427306d3faa22244147dd32a3b81caa78c4cb4e683109e5df518f3ca503f491">RADARIQ_CMD_VAR_REQUEST</a> = 0
+, <a class="el" href="_radar_i_q_8h.html#aec427306d3faa22244147dd32a3b81caa42ec431f84ccf787cfb9938d090d0edf">RADARIQ_CMD_VAR_RESPONSE</a> = 1
+, <a class="el" href="_radar_i_q_8h.html#aec427306d3faa22244147dd32a3b81caa0befa335e28cbf87ada1c34dd7e987cd">RADARIQ_CMD_VAR_SET</a> = 2
+ }</td></tr>
+<tr class="separator:aec427306d3faa22244147dd32a3b81ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5e3cd35b1affded336e4f08cb1c3deec"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deec">RadarIQReturnVal_t</a> { <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca7c4adf366b8f5ffdcb6f4510f9bfe234">RADARIQ_RETURN_VAL_OK</a> = 0
 , <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deecae9fc74afc7401fed232235ee62257c19">RADARIQ_RETURN_VAL_WARNING</a> = 1
 , <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca1ebce77dd4e98421948b219aae1021e2">RADARIQ_RETURN_VAL_ERR</a> = 2
@@ -245,6 +259,28 @@ Enumerations</h2></td></tr>
 , <a class="el" href="_radar_i_q_8h.html#a3f85be3ddb4db6e62228ae1e699219afa492af2474d6555b733a7d804c0bf2fcf">RADARIQ_DENSITY_VERY_DENSE</a> = 2
  }</td></tr>
 <tr class="separator:a3f85be3ddb4db6e62228ae1e699219af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a997c582f9a8797996fbcc0970a95d111"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8h.html#a997c582f9a8797996fbcc0970a95d111">RadarIQMsgType_t</a> { <br />
+&#160;&#160;<a class="el" href="_radar_i_q_8h.html#a997c582f9a8797996fbcc0970a95d111a4f91d07020cbef5ee5c41d69a3da8a6d">RADARIQ_MSG_TYPE_TEMPORARY</a> = 0
+, <a class="el" href="_radar_i_q_8h.html#a997c582f9a8797996fbcc0970a95d111a939cf58d29cc514ff38b2610598f81e7">RADARIQ_MSG_TYPE_DEBUG</a> = 1
+, <a class="el" href="_radar_i_q_8h.html#a997c582f9a8797996fbcc0970a95d111aa4acba5a8dba321927caa46f18f925fc">RADARIQ_MSG_TYPE_INFO</a> = 2
+, <a class="el" href="_radar_i_q_8h.html#a997c582f9a8797996fbcc0970a95d111a866da776c92a3dc646d2e35a38cc3415">RADARIQ_MSG_TYPE_WARNING</a> = 3
+, <br />
+&#160;&#160;<a class="el" href="_radar_i_q_8h.html#a997c582f9a8797996fbcc0970a95d111a4cdbe888da780df766f08f8364be2605">RADARIQ_MSG_TYPE_ERROR</a> = 4
+, <a class="el" href="_radar_i_q_8h.html#a997c582f9a8797996fbcc0970a95d111a34159ad49ea0e089b464d6ecfb05d41b">RADARIQ_MSG_TYPE_SUCCESS</a> = 5
+<br />
+ }</td></tr>
+<tr class="separator:a997c582f9a8797996fbcc0970a95d111"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ed08faa10779990804d6c9c1d31a52f"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8h.html#a5ed08faa10779990804d6c9c1d31a52f">RadarIQMsgCode_t</a> { <br />
+&#160;&#160;<a class="el" href="_radar_i_q_8h.html#a5ed08faa10779990804d6c9c1d31a52fa6fb8eb8d038e90008bb83362d07434a2">RADARIQ_MSG_CODE_GENERAL</a> = 0
+, <a class="el" href="_radar_i_q_8h.html#a5ed08faa10779990804d6c9c1d31a52fa18e7a11d12b83e8868f3b52caf25d802">RADARIQ_MSG_CODE_FRAMERATE_TOO_HIGH</a> = 1
+, <a class="el" href="_radar_i_q_8h.html#a5ed08faa10779990804d6c9c1d31a52fa5fba30e262cbc770dbc6cd46d7e60a7d">RADARIQ_MSG_CODE_CALIB_FAILED</a> = 2
+, <a class="el" href="_radar_i_q_8h.html#a5ed08faa10779990804d6c9c1d31a52fa03af7e309327ebd9f2f4dbdb5a03f32a">RADARIQ_MSG_CODE_IWR_COMMS_TIMEOUT</a> = 3
+, <br />
+&#160;&#160;<a class="el" href="_radar_i_q_8h.html#a5ed08faa10779990804d6c9c1d31a52fad81bbd91d0b17b0a1ff0d229a1db78b0">RADARIQ_MSG_CODE_INVALID_COMMAND</a> = 100
+, <a class="el" href="_radar_i_q_8h.html#a5ed08faa10779990804d6c9c1d31a52fa530c9b8477c6887feca9b2ab022c25eb">RADARIQ_MSG_CODE_INVALID_VALUE</a> = 101
+<br />
+ }</td></tr>
+<tr class="separator:a5ed08faa10779990804d6c9c1d31a52f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -254,8 +290,8 @@ Functions</h2></td></tr>
 <tr class="separator:a7a048aba3e0deee29a219cadc44198e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1fda0aa929e975b2b5c9639d90ca08a6"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8h.html#a1fda0aa929e975b2b5c9639d90ca08a6">RadarIQ_getMemoryUsage</a> (void)</td></tr>
 <tr class="separator:a1fda0aa929e975b2b5c9639d90ca08a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aff2d12b19597252d766b788c63d3526d"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8h.html#aff2d12b19597252d766b788c63d3526d">RadarIQ_getDataBuffer</a> (const <a class="el" href="_radar_i_q_8h.html#aed45e60c5eebea06431bbceab1356a62">RadarIQHandle_t</a> obj, uint8_t *dest)</td></tr>
-<tr class="separator:aff2d12b19597252d766b788c63d3526d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0a5bececd801afa311f55f540ab8944"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8h.html#ae0a5bececd801afa311f55f540ab8944">RadarIQ_getDataBuffer</a> (const <a class="el" href="_radar_i_q_8h.html#aed45e60c5eebea06431bbceab1356a62">RadarIQHandle_t</a> obj, uint8_t *dest)</td></tr>
+<tr class="separator:ae0a5bececd801afa311f55f540ab8944"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2cb326471b57bd2fcb94912d41f05b6e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8h.html#a2cb326471b57bd2fcb94912d41f05b6e">RadarIQ_getData</a> (const <a class="el" href="_radar_i_q_8h.html#aed45e60c5eebea06431bbceab1356a62">RadarIQHandle_t</a> obj, <a class="el" href="union_radar_i_q_data__t.html">RadarIQData_t</a> *dest)</td></tr>
 <tr class="separator:a2cb326471b57bd2fcb94912d41f05b6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a190ae99009add2e51843324ee9d399ea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8h.html#a190ae99009add2e51843324ee9d399ea">RadarIQ_getProcessingStats</a> (const <a class="el" href="_radar_i_q_8h.html#aed45e60c5eebea06431bbceab1356a62">RadarIQHandle_t</a> obj, <a class="el" href="struct_radar_i_q_processing_stats__t.html">RadarIQProcessingStats_t</a> *const dest)</td></tr>
@@ -274,8 +310,8 @@ Functions</h2></td></tr>
 <tr class="separator:a44ca5ca6af1c13422a50701d9560a1d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a670834e759ccd4f1427923ba06be62a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deec">RadarIQReturnVal_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8h.html#a670834e759ccd4f1427923ba06be62a6">RadarIQ_getVersion</a> (const <a class="el" href="_radar_i_q_8h.html#aed45e60c5eebea06431bbceab1356a62">RadarIQHandle_t</a> obj, <a class="el" href="struct_radar_i_q_version__t.html">RadarIQVersion_t</a> *const firmware, <a class="el" href="struct_radar_i_q_version__t.html">RadarIQVersion_t</a> *const hardware)</td></tr>
 <tr class="separator:a670834e759ccd4f1427923ba06be62a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0803d3514663fb7cbf6136507d4bdfdc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deec">RadarIQReturnVal_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8h.html#a0803d3514663fb7cbf6136507d4bdfdc">RadarIQ_getRadarVersions</a> (const <a class="el" href="_radar_i_q_8h.html#aed45e60c5eebea06431bbceab1356a62">RadarIQHandle_t</a> obj, <a class="el" href="struct_radar_i_q_version_i_w_r__t.html">RadarIQVersionIWR_t</a> *const sbl, <a class="el" href="struct_radar_i_q_version_i_w_r__t.html">RadarIQVersionIWR_t</a> *const app1, <a class="el" href="struct_radar_i_q_version_i_w_r__t.html">RadarIQVersionIWR_t</a> *const app2)</td></tr>
-<tr class="separator:a0803d3514663fb7cbf6136507d4bdfdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fabef5ff2513afeab48c70edf07de70"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deec">RadarIQReturnVal_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8h.html#a7fabef5ff2513afeab48c70edf07de70">RadarIQ_getRadarVersions</a> (const <a class="el" href="_radar_i_q_8h.html#aed45e60c5eebea06431bbceab1356a62">RadarIQHandle_t</a> obj, const <a class="el" href="_radar_i_q_8h.html#a771bf4777efe1d82b4ccc87ebefcaaf5">RadarIQCaptureMode_t</a> mode, <a class="el" href="struct_radar_i_q_version_i_w_r__t.html">RadarIQVersionIWR_t</a> *const version)</td></tr>
+<tr class="separator:a7fabef5ff2513afeab48c70edf07de70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8beec0ed3b8db0408f422ad2880b58d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deec">RadarIQReturnVal_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8h.html#af8beec0ed3b8db0408f422ad2880b58d">RadarIQ_getSerialNumber</a> (const <a class="el" href="_radar_i_q_8h.html#aed45e60c5eebea06431bbceab1356a62">RadarIQHandle_t</a> obj, <a class="el" href="struct_radar_i_q_serial_no__t.html">RadarIQSerialNo_t</a> *const serial)</td></tr>
 <tr class="separator:af8beec0ed3b8db0408f422ad2880b58d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a223f5b4a9f65f7df3c54b02635a9c6f7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deec">RadarIQReturnVal_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8h.html#a223f5b4a9f65f7df3c54b02635a9c6f7">RadarIQ_getFrameRate</a> (const <a class="el" href="_radar_i_q_8h.html#aed45e60c5eebea06431bbceab1356a62">RadarIQHandle_t</a> obj, uint8_t *const rate)</td></tr>
@@ -322,14 +358,14 @@ Functions</h2></td></tr>
 <dl class="section copyright"><dt>Copyright</dt><dd>Copyright (C) 2021 RadarIQ Licensed under the MIT license</dd></dl>
 <dl class="section author"><dt>Author</dt><dd>RadarIQ Ltd </dd></dl>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="af56d98c64ecd39e7e6cc54471ee5ac9a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af56d98c64ecd39e7e6cc54471ee5ac9a">&#9670;&nbsp;</a></span>radariq_assert</h2>
+<a id="a2c491ebed17552b79be4a97890497c84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c491ebed17552b79be4a97890497c84">&#9670;&nbsp;</a></span>RADARIQ_ASSERT</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define radariq_assert</td>
+          <td class="memname">#define RADARIQ_ASSERT</td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">expr</td><td>)</td>
@@ -338,6 +374,23 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Assertion macro - redefine if necessary or remove at your own risk </p>
+
+</div>
+</div>
+<a id="a4fc23344049dea1a76f5678ab95f2ece"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fc23344049dea1a76f5678ab95f2ece">&#9670;&nbsp;</a></span>RADARIQ_DEBUG_ENABLE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define RADARIQ_DEBUG_ENABLE&#160;&#160;&#160;0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enables any debug messages printed from <a class="el" href="_radar_i_q_8c.html">RadarIQ.c</a> if set to 1 <br  />
+ </p>
 
 </div>
 </div>
@@ -549,6 +602,22 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a1b950f17a992144d8188958d8f3180de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b950f17a992144d8188958d8f3180de">&#9670;&nbsp;</a></span>RADARIQ_VERSION_NAME_LEN</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define RADARIQ_VERSION_NAME_LEN&#160;&#160;&#160;20u</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Maximum length of string for firmware version names. </p>
+
+</div>
+</div>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="ada8e984837f273e2124189ebcc7d2a00"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ada8e984837f273e2124189ebcc7d2a00">&#9670;&nbsp;</a></span>RadarIQ_t</h2>
@@ -675,6 +744,29 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="aec427306d3faa22244147dd32a3b81ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec427306d3faa22244147dd32a3b81ca">&#9670;&nbsp;</a></span>RadarIQCommandVariant_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="_radar_i_q_8h.html#aec427306d3faa22244147dd32a3b81ca">RadarIQCommandVariant_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>UART packet command variants </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aec427306d3faa22244147dd32a3b81caa78c4cb4e683109e5df518f3ca503f491"></a>RADARIQ_CMD_VAR_REQUEST&#160;</td><td class="fielddoc"><p>Requests a response from the device. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aec427306d3faa22244147dd32a3b81caa42ec431f84ccf787cfb9938d090d0edf"></a>RADARIQ_CMD_VAR_RESPONSE&#160;</td><td class="fielddoc"><p>A response sent from the device. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aec427306d3faa22244147dd32a3b81caa0befa335e28cbf87ada1c34dd7e987cd"></a>RADARIQ_CMD_VAR_SET&#160;</td><td class="fielddoc"><p>Sets a parameter of the device. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 <a id="abb654295c43e01c1a3a6631fcda3f821"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abb654295c43e01c1a3a6631fcda3f821">&#9670;&nbsp;</a></span>RadarIQMovingFilterMode_t</h2>
 
@@ -691,6 +783,64 @@ Functions</h2></td></tr>
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="abb654295c43e01c1a3a6631fcda3f821aed66c91bce97969ec5faa163dcd44cc0"></a>RADARIQ_MOVING_BOTH&#160;</td><td class="fielddoc"><p>Filter will keep static and moving objects. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="abb654295c43e01c1a3a6631fcda3f821afdc195cf2149c50a48b589ae0df23dcb"></a>RADARIQ_MOVING_OBJECTS_ONLY&#160;</td><td class="fielddoc"><p>Filter will remove static objects and keep moving objects. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a id="a5ed08faa10779990804d6c9c1d31a52f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ed08faa10779990804d6c9c1d31a52f">&#9670;&nbsp;</a></span>RadarIQMsgCode_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="_radar_i_q_8h.html#a5ed08faa10779990804d6c9c1d31a52f">RadarIQMsgCode_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Types of message codes sent from the device in a message packet </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a5ed08faa10779990804d6c9c1d31a52fa6fb8eb8d038e90008bb83362d07434a2"></a>RADARIQ_MSG_CODE_GENERAL&#160;</td><td class="fielddoc"><p>General debug messages with no specific code. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a5ed08faa10779990804d6c9c1d31a52fa18e7a11d12b83e8868f3b52caf25d802"></a>RADARIQ_MSG_CODE_FRAMERATE_TOO_HIGH&#160;</td><td class="fielddoc"><p>Requested frame rate was too high and limited. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a5ed08faa10779990804d6c9c1d31a52fa5fba30e262cbc770dbc6cd46d7e60a7d"></a>RADARIQ_MSG_CODE_CALIB_FAILED&#160;</td><td class="fielddoc"><p>Device could not be calibrated. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a5ed08faa10779990804d6c9c1d31a52fa03af7e309327ebd9f2f4dbdb5a03f32a"></a>RADARIQ_MSG_CODE_IWR_COMMS_TIMEOUT&#160;</td><td class="fielddoc"><p>Communications with IWR timed out. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a5ed08faa10779990804d6c9c1d31a52fad81bbd91d0b17b0a1ff0d229a1db78b0"></a>RADARIQ_MSG_CODE_INVALID_COMMAND&#160;</td><td class="fielddoc"><p>Invalid UART command sent to the device. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a5ed08faa10779990804d6c9c1d31a52fa530c9b8477c6887feca9b2ab022c25eb"></a>RADARIQ_MSG_CODE_INVALID_VALUE&#160;</td><td class="fielddoc"><p>Invalid parameter in UART command sent to the device. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a id="a997c582f9a8797996fbcc0970a95d111"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a997c582f9a8797996fbcc0970a95d111">&#9670;&nbsp;</a></span>RadarIQMsgType_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="_radar_i_q_8h.html#a997c582f9a8797996fbcc0970a95d111">RadarIQMsgType_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Types of messages sent from the device in a message packet </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a997c582f9a8797996fbcc0970a95d111a4f91d07020cbef5ee5c41d69a3da8a6d"></a>RADARIQ_MSG_TYPE_TEMPORARY&#160;</td><td class="fielddoc"><p>Temporary messages not intended to be used permanently. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a997c582f9a8797996fbcc0970a95d111a939cf58d29cc514ff38b2610598f81e7"></a>RADARIQ_MSG_TYPE_DEBUG&#160;</td><td class="fielddoc"><p>Debug information about an operation. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a997c582f9a8797996fbcc0970a95d111aa4acba5a8dba321927caa46f18f925fc"></a>RADARIQ_MSG_TYPE_INFO&#160;</td><td class="fielddoc"><p>General information about an operation. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a997c582f9a8797996fbcc0970a95d111a866da776c92a3dc646d2e35a38cc3415"></a>RADARIQ_MSG_TYPE_WARNING&#160;</td><td class="fielddoc"><p>An operation was completed but not as expected. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a997c582f9a8797996fbcc0970a95d111a4cdbe888da780df766f08f8364be2605"></a>RADARIQ_MSG_TYPE_ERROR&#160;</td><td class="fielddoc"><p>An operation was not completed due to an error. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a997c582f9a8797996fbcc0970a95d111a34159ad49ea0e089b464d6ecfb05d41b"></a>RADARIQ_MSG_TYPE_SUCCESS&#160;</td><td class="fielddoc"><p>An operation completed successfully. </p>
 </td></tr>
 </table>
 
@@ -755,7 +905,7 @@ Functions</h2></td></tr>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a5e3cd35b1affded336e4f08cb1c3deeca7c4adf366b8f5ffdcb6f4510f9bfe234"></a>RADARIQ_RETURN_VAL_OK&#160;</td><td class="fielddoc"><p>Function excecuted ok. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a5e3cd35b1affded336e4f08cb1c3deecae9fc74afc7401fed232235ee62257c19"></a>RADARIQ_RETURN_VAL_WARNING&#160;</td><td class="fielddoc"><p>Value(s) passed to function were out of range and limitted. </p>
+<tr><td class="fieldname"><a id="a5e3cd35b1affded336e4f08cb1c3deecae9fc74afc7401fed232235ee62257c19"></a>RADARIQ_RETURN_VAL_WARNING&#160;</td><td class="fielddoc"><p>Value(s) passed to function were out of range and limited. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a5e3cd35b1affded336e4f08cb1c3deeca1ebce77dd4e98421948b219aae1021e2"></a>RADARIQ_RETURN_VAL_ERR&#160;</td><td class="fielddoc"><p>Function returned an error. </p>
 </td></tr>
@@ -880,14 +1030,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aff2d12b19597252d766b788c63d3526d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aff2d12b19597252d766b788c63d3526d">&#9670;&nbsp;</a></span>RadarIQ_getDataBuffer()</h2>
+<a id="ae0a5bececd801afa311f55f540ab8944"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0a5bececd801afa311f55f540ab8944">&#9670;&nbsp;</a></span>RadarIQ_getDataBuffer()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint8_t RadarIQ_getDataBuffer </td>
+          <td class="memname">uint16_t RadarIQ_getDataBuffer </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="_radar_i_q_8h.html#aed45e60c5eebea06431bbceab1356a62">RadarIQHandle_t</a>&#160;</td>
           <td class="paramname"><em>obj</em>, </td>
@@ -1282,8 +1432,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a0803d3514663fb7cbf6136507d4bdfdc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0803d3514663fb7cbf6136507d4bdfdc">&#9670;&nbsp;</a></span>RadarIQ_getRadarVersions()</h2>
+<a id="a7fabef5ff2513afeab48c70edf07de70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fabef5ff2513afeab48c70edf07de70">&#9670;&nbsp;</a></span>RadarIQ_getRadarVersions()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1297,20 +1447,14 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="struct_radar_i_q_version_i_w_r__t.html">RadarIQVersionIWR_t</a> *const&#160;</td>
-          <td class="paramname"><em>sbl</em>, </td>
+          <td class="paramtype">const <a class="el" href="_radar_i_q_8h.html#a771bf4777efe1d82b4ccc87ebefcaaf5">RadarIQCaptureMode_t</a>&#160;</td>
+          <td class="paramname"><em>mode</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="struct_radar_i_q_version_i_w_r__t.html">RadarIQVersionIWR_t</a> *const&#160;</td>
-          <td class="paramname"><em>app1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="struct_radar_i_q_version_i_w_r__t.html">RadarIQVersionIWR_t</a> *const&#160;</td>
-          <td class="paramname"><em>app2</em>&#160;</td>
+          <td class="paramname"><em>version</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1323,9 +1467,8 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">obj</td><td>The RadarIQ object handle returned from <a class="el" href="_radar_i_q_8c.html#a889302d8de02fc27890045fa32bdd3c7">RadarIQ_init()</a> </td></tr>
-    <tr><td class="paramname">sbl</td><td>Pointer to a <a class="el" href="struct_radar_i_q_version_i_w_r__t.html">RadarIQVersionIWR_t</a> struct to copy the secondary bootloader firmware version information into </td></tr>
-    <tr><td class="paramname">app1</td><td>Pointer to a <a class="el" href="struct_radar_i_q_version_i_w_r__t.html">RadarIQVersionIWR_t</a> struct to copy the first application firmware version information into </td></tr>
-    <tr><td class="paramname">app2</td><td>Pointer to a <a class="el" href="struct_radar_i_q_version_i_w_r__t.html">RadarIQVersionIWR_t</a> struct to copy the second application firmware version information into</td></tr>
+    <tr><td class="paramname">mode</td><td>Capture mode to get the firmware version of (<a class="el" href="_radar_i_q_8h.html#a771bf4777efe1d82b4ccc87ebefcaaf5a4b9317ce90f3d74e31e85720b7891656" title="Point-cloud capture mode.">RADARIQ_MODE_POINT_CLOUD</a> or <a class="el" href="_radar_i_q_8h.html#a771bf4777efe1d82b4ccc87ebefcaaf5a56c028e815f29a9603366e62af2e1189" title="Object-tracking capture mode.">RADARIQ_MODE_OBJECT_TRACKING</a>) </td></tr>
+    <tr><td class="paramname">version</td><td>Pointer to a <a class="el" href="struct_radar_i_q_version_i_w_r__t.html">RadarIQVersionIWR_t</a> struct to copy the firmware version information into</td></tr>
   </table>
   </dd>
 </dl>
@@ -1683,7 +1826,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca7c4adf366b8f5ffdcb6f4510f9bfe234" title="Function excecuted ok.">RADARIQ_RETURN_VAL_OK</a> on success, <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca1ebce77dd4e98421948b219aae1021e2" title="Function returned an error.">RADARIQ_RETURN_VAL_ERR</a> if no valid response was received, <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deecae9fc74afc7401fed232235ee62257c19" title="Value(s) passed to function were out of range and limitted.">RADARIQ_RETURN_VAL_WARNING</a> if provided min or max values were out of valid range and limited </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca7c4adf366b8f5ffdcb6f4510f9bfe234" title="Function excecuted ok.">RADARIQ_RETURN_VAL_OK</a> on success, <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca1ebce77dd4e98421948b219aae1021e2" title="Function returned an error.">RADARIQ_RETURN_VAL_ERR</a> if no valid response was received, <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deecae9fc74afc7401fed232235ee62257c19" title="Value(s) passed to function were out of range and limited.">RADARIQ_RETURN_VAL_WARNING</a> if provided min or max values were out of valid range and limited </dd></dl>
 
 </div>
 </div>
@@ -1727,7 +1870,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca7c4adf366b8f5ffdcb6f4510f9bfe234" title="Function excecuted ok.">RADARIQ_RETURN_VAL_OK</a> on success, <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca1ebce77dd4e98421948b219aae1021e2" title="Function returned an error.">RADARIQ_RETURN_VAL_ERR</a> if no valid response was received, <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deecae9fc74afc7401fed232235ee62257c19" title="Value(s) passed to function were out of range and limitted.">RADARIQ_RETURN_VAL_WARNING</a> if provided min or max values were out of valid range and limited </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca7c4adf366b8f5ffdcb6f4510f9bfe234" title="Function excecuted ok.">RADARIQ_RETURN_VAL_OK</a> on success, <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca1ebce77dd4e98421948b219aae1021e2" title="Function returned an error.">RADARIQ_RETURN_VAL_ERR</a> if no valid response was received, <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deecae9fc74afc7401fed232235ee62257c19" title="Value(s) passed to function were out of range and limited.">RADARIQ_RETURN_VAL_WARNING</a> if provided min or max values were out of valid range and limited </dd></dl>
 
 </div>
 </div>
@@ -1764,7 +1907,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca7c4adf366b8f5ffdcb6f4510f9bfe234" title="Function excecuted ok.">RADARIQ_RETURN_VAL_OK</a> on success, <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca1ebce77dd4e98421948b219aae1021e2" title="Function returned an error.">RADARIQ_RETURN_VAL_ERR</a> if no valid response was received, <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deecae9fc74afc7401fed232235ee62257c19" title="Value(s) passed to function were out of range and limitted.">RADARIQ_RETURN_VAL_WARNING</a> if provided frame rate was out of valid range and limited </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca7c4adf366b8f5ffdcb6f4510f9bfe234" title="Function excecuted ok.">RADARIQ_RETURN_VAL_OK</a> on success, <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca1ebce77dd4e98421948b219aae1021e2" title="Function returned an error.">RADARIQ_RETURN_VAL_ERR</a> if no valid response was received, <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deecae9fc74afc7401fed232235ee62257c19" title="Value(s) passed to function were out of range and limited.">RADARIQ_RETURN_VAL_WARNING</a> if provided frame rate was out of valid range and limited </dd></dl>
 
 </div>
 </div>
@@ -1803,8 +1946,8 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">obj</td><td>The RadarIQ object handle returned from <a class="el" href="_radar_i_q_8c.html#a889302d8de02fc27890045fa32bdd3c7">RadarIQ_init()</a> </td></tr>
-    <tr><td class="paramname">min</td><td>The minimum height setting into apply </td></tr>
-    <tr><td class="paramname">max</td><td>The minimum height setting into apply</td></tr>
+    <tr><td class="paramname">min</td><td>The minimum height setting to apply </td></tr>
+    <tr><td class="paramname">max</td><td>The minimum height setting to apply</td></tr>
   </table>
   </dd>
 </dl>
@@ -1919,7 +2062,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca7c4adf366b8f5ffdcb6f4510f9bfe234" title="Function excecuted ok.">RADARIQ_RETURN_VAL_OK</a> on success, <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca1ebce77dd4e98421948b219aae1021e2" title="Function returned an error.">RADARIQ_RETURN_VAL_ERR</a> if no valid response was received, <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deecae9fc74afc7401fed232235ee62257c19" title="Value(s) passed to function were out of range and limitted.">RADARIQ_RETURN_VAL_WARNING</a> if provided value was out of valid range and limited </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca7c4adf366b8f5ffdcb6f4510f9bfe234" title="Function excecuted ok.">RADARIQ_RETURN_VAL_OK</a> on success, <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca1ebce77dd4e98421948b219aae1021e2" title="Function returned an error.">RADARIQ_RETURN_VAL_ERR</a> if no valid response was received, <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deecae9fc74afc7401fed232235ee62257c19" title="Value(s) passed to function were out of range and limited.">RADARIQ_RETURN_VAL_WARNING</a> if provided value was out of valid range and limited </dd></dl>
 
 </div>
 </div>
