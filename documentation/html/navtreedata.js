@@ -58,7 +58,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_radar_i_q_8c.html",
-"struct_radar_i_q_serial_no__t.html#a17cc35e38fcd0170f3fb71a155930e36"
+"struct_radar_i_q_pointcloud_stats__t.html#acc791a1fe48d6087e5b505a89ee7b5c0"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
