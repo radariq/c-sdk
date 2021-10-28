@@ -1268,6 +1268,70 @@ RadarIQReturnVal_t RadarIQ_setObjectSize(const RadarIQHandle_t obj, uint8_t size
     return ret;    
 }
 
+/**
+ * Sends a ::RADARIQ_CMD_AUTO_START packet to the device to read the flag for auto-start of capture on boot.
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param autoStart Pointer to a variable to copy the auto-start flag into
+ * 
+ * @return ::RADARIQ_RETURN_VAL_OK on success, ::RADARIQ_RETURN_VAL_ERR if no valid response was received
+ */
+RadarIQReturnVal_t RadarIQ_getAutoStart(const RadarIQHandle_t obj, uint8_t * const autoStart)
+{
+    RADARIQ_ASSERT(NULL != obj);
+    RADARIQ_ASSERT(NULL != autoStart);
+
+    RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
+
+    obj->txPacket.data[0] = RADARIQ_CMD_AUTO_START;
+    obj->txPacket.data[1] = RADARIQ_CMD_VAR_REQUEST;
+    obj->txPacket.len = 2u;
+
+    RadarIQ_sendPacket(obj);
+
+    if (RADARIQ_CMD_AUTO_START == RadarIQ_pollResponse(obj))
+    {
+        *autoStart = obj->rxPacket.data[2];
+    }
+    else
+    {
+        ret = RADARIQ_RETURN_VAL_ERR;    
+    }
+
+    return ret;
+}
+
+/**
+ * Sends a ::RADARIQ_CMD_AUTO_START packet to the device to toggle auto-start of capture on boot.
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ * @param autoStart The auto-start flag - 0 to disable, 1 to enable
+ * 
+ * @return ::RADARIQ_RETURN_VAL_OK on success, ::RADARIQ_RETURN_VAL_ERR if no valid response was received
+ */
+RadarIQReturnVal_t RadarIQ_setAutoStart(const RadarIQHandle_t obj, const uint8_t autoStart)
+{
+    RADARIQ_ASSERT(NULL != obj);
+
+    RadarIQReturnVal_t ret = RADARIQ_RETURN_VAL_OK;
+
+    const uint8_t enable = (0 != autoStart);
+
+    obj->txPacket.data[0] = RADARIQ_CMD_AUTO_START;
+    obj->txPacket.data[1] = RADARIQ_CMD_VAR_SET;
+    obj->txPacket.data[2] = enable;
+    obj->txPacket.len = 3u;
+
+    RadarIQ_sendPacket(obj);
+
+    if (RADARIQ_CMD_AUTO_START!= RadarIQ_pollResponse(obj))
+    {
+        ret = RADARIQ_RETURN_VAL_ERR;    
+    }
+
+    return ret;  
+}
+
 //===============================================================================================//
 // FILE-SCOPE FUNCTIONS - Packet Parsing
 //===============================================================================================//

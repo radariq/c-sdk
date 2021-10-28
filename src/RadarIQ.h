@@ -88,6 +88,7 @@ typedef enum
     RADARIQ_CMD_IWR_VERSION          = 0x14,        ///< Returns the firmware versions running on the IWR
     RADARIQ_CMD_SCENE_CALIB          = 0x15,        ///< Runs a scene calibration on the device
     RADARIQ_CMD_OBJECT_SIZE          = 0x16,        ///< Sets the target object size for object-tracking mode
+    RADARIQ_CMD_AUTO_START           = 0x17,        ///< Enables the device to auto-start on next boot
     RADARIQ_CMD_CAPTURE_START        = 0x64,        ///< Starts a radar data capture on the device
     RADARIQ_CMD_CAPTURE_STOP         = 0x65,        ///< Stops a radar data capture
     RADARIQ_CMD_PNT_CLOUD_FRAME      = 0x66,        ///< Point-cloud frame data returned from device
@@ -399,6 +400,8 @@ RadarIQReturnVal_t RadarIQ_setHeightFilter(const RadarIQHandle_t obj, int16_t mi
 RadarIQReturnVal_t RadarIQ_sceneCalibrate(const RadarIQHandle_t obj);
 RadarIQReturnVal_t RadarIQ_getObjectSize(const RadarIQHandle_t obj, uint8_t * const size);
 RadarIQReturnVal_t RadarIQ_setObjectSize(const RadarIQHandle_t obj, uint8_t size);
+RadarIQReturnVal_t RadarIQ_getAutoStart(const RadarIQHandle_t obj, uint8_t * const autoStart);
+RadarIQReturnVal_t RadarIQ_setAutoStart(const RadarIQHandle_t obj, const uint8_t autoStart);
 
 #ifdef __cplusplus
 }
