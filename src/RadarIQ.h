@@ -43,7 +43,7 @@ extern "C" {
 /* Limits */
 #define RADARIQ_MAX_MESSAGE_STRING         200u      ///< Maximum string length of the message in message packets
 #define RADARIQ_MIN_FRAME_RATE             1u        ///< Minimum capture frame rate in frames/second
-#define RADARIQ_MAX_FRAME_RATE             30u       ///< Maximum capture frame rate in frames/second
+#define RADARIQ_MAX_FRAME_RATE             20u       ///< Maximum capture frame rate in frames/second
 #define RADARIQ_MIN_DIST_FILT              0u        ///< Minimum bound length of distance in millimeters
 #define RADARIQ_MAX_DIST_FILT              10000u    ///< Maximum bound length of distance in millimeters
 #define RADARIQ_MIN_ANGLE_FILT             -55       ///< Minimum bound angle of angle filter in degrees
