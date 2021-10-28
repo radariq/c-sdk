@@ -1,5 +1,10 @@
 var NAVTREEINDEX1 =
 {
+"struct_radar_i_q_pointcloud_stats__t.html#a4a200541895fd2a4ea51c5d5b915eda3":[2,0,8,7],
+"struct_radar_i_q_pointcloud_stats__t.html#a644d012d5600962f71d87b083cf7f632":[2,0,8,6],
+"struct_radar_i_q_pointcloud_stats__t.html#a79f9b804c9d5946af4a652e781fed28e":[2,0,8,0],
+"struct_radar_i_q_pointcloud_stats__t.html#aa8bdfc4576a63f80ddbab11639985624":[2,0,8,5],
+"struct_radar_i_q_pointcloud_stats__t.html#ac281c567b6d31740b2defcf9f46d8736":[2,0,8,3],
 "struct_radar_i_q_pointcloud_stats__t.html#acc791a1fe48d6087e5b505a89ee7b5c0":[2,0,8,4],
 "struct_radar_i_q_pointcloud_stats__t.html#ae7e2d97d35f7f8a29e5524948208688d":[2,0,8,2],
 "struct_radar_i_q_processing_stats__t.html":[2,0,9],

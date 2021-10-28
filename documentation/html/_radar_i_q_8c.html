@@ -207,6 +207,10 @@ Functions</h2></td></tr>
 <tr class="separator:a5a005142a2b49e0d25d298b8d45ba0fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afcb5cdbf33337762a369f95da70242ef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deec">RadarIQReturnVal_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8c.html#afcb5cdbf33337762a369f95da70242ef">RadarIQ_setObjectSize</a> (const <a class="el" href="_radar_i_q_8h.html#aed45e60c5eebea06431bbceab1356a62">RadarIQHandle_t</a> obj, uint8_t size)</td></tr>
 <tr class="separator:afcb5cdbf33337762a369f95da70242ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcebf5ec01747867c891be7cad0e019c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deec">RadarIQReturnVal_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8c.html#adcebf5ec01747867c891be7cad0e019c">RadarIQ_getAutoStart</a> (const <a class="el" href="_radar_i_q_8h.html#aed45e60c5eebea06431bbceab1356a62">RadarIQHandle_t</a> obj, uint8_t *const autoStart)</td></tr>
+<tr class="separator:adcebf5ec01747867c891be7cad0e019c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c4546438b480f7632b07ceac6f5c1df"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deec">RadarIQReturnVal_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8c.html#a6c4546438b480f7632b07ceac6f5c1df">RadarIQ_setAutoStart</a> (const <a class="el" href="_radar_i_q_8h.html#aed45e60c5eebea06431bbceab1356a62">RadarIQHandle_t</a> obj, const uint8_t autoStart)</td></tr>
+<tr class="separator:a6c4546438b480f7632b07ceac6f5c1df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>RadarIQ SDK. Software Development Kit to integrate the RadarIQ M1 sensor with C and C++ applications</p>
@@ -379,6 +383,43 @@ Functions</h2></td></tr>
     <tr><td class="paramname">obj</td><td>The RadarIQ object handle returned from <a class="el" href="_radar_i_q_8c.html#a889302d8de02fc27890045fa32bdd3c7">RadarIQ_init()</a> </td></tr>
     <tr><td class="paramname">min</td><td>Pointer to a variable to copy the minimum angle setting into </td></tr>
     <tr><td class="paramname">max</td><td>Pointer to a variable to copy the maximum angle setting into</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca7c4adf366b8f5ffdcb6f4510f9bfe234" title="Function excecuted ok.">RADARIQ_RETURN_VAL_OK</a> on success, <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca1ebce77dd4e98421948b219aae1021e2" title="Function returned an error.">RADARIQ_RETURN_VAL_ERR</a> if no valid response was received </dd></dl>
+
+</div>
+</div>
+<a id="adcebf5ec01747867c891be7cad0e019c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcebf5ec01747867c891be7cad0e019c">&#9670;&nbsp;</a></span>RadarIQ_getAutoStart()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deec">RadarIQReturnVal_t</a> RadarIQ_getAutoStart </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="_radar_i_q_8h.html#aed45e60c5eebea06431bbceab1356a62">RadarIQHandle_t</a>&#160;</td>
+          <td class="paramname"><em>obj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *const&#160;</td>
+          <td class="paramname"><em>autoStart</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sends a <a class="el" href="_radar_i_q_8h.html#a15802590784cc0821ff3b5fa3ade4793ae2f42cd731b461b03713f52b125ea2c9" title="Enables the device to auto-start on next boot.">RADARIQ_CMD_AUTO_START</a> packet to the device to read the flag for auto-start of capture on boot.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">obj</td><td>The RadarIQ object handle returned from <a class="el" href="_radar_i_q_8c.html#a889302d8de02fc27890045fa32bdd3c7">RadarIQ_init()</a> </td></tr>
+    <tr><td class="paramname">autoStart</td><td>Pointer to a variable to copy the auto-start flag into</td></tr>
   </table>
   </dd>
 </dl>
@@ -1305,6 +1346,43 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca7c4adf366b8f5ffdcb6f4510f9bfe234" title="Function excecuted ok.">RADARIQ_RETURN_VAL_OK</a> on success, <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca1ebce77dd4e98421948b219aae1021e2" title="Function returned an error.">RADARIQ_RETURN_VAL_ERR</a> if no valid response was received, <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deecae9fc74afc7401fed232235ee62257c19" title="Value(s) passed to function were out of range and limited.">RADARIQ_RETURN_VAL_WARNING</a> if provided min or max values were out of valid range and limited </dd></dl>
+
+</div>
+</div>
+<a id="a6c4546438b480f7632b07ceac6f5c1df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c4546438b480f7632b07ceac6f5c1df">&#9670;&nbsp;</a></span>RadarIQ_setAutoStart()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deec">RadarIQReturnVal_t</a> RadarIQ_setAutoStart </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="_radar_i_q_8h.html#aed45e60c5eebea06431bbceab1356a62">RadarIQHandle_t</a>&#160;</td>
+          <td class="paramname"><em>obj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>autoStart</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sends a <a class="el" href="_radar_i_q_8h.html#a15802590784cc0821ff3b5fa3ade4793ae2f42cd731b461b03713f52b125ea2c9" title="Enables the device to auto-start on next boot.">RADARIQ_CMD_AUTO_START</a> packet to the device to toggle auto-start of capture on boot.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">obj</td><td>The RadarIQ object handle returned from <a class="el" href="_radar_i_q_8c.html#a889302d8de02fc27890045fa32bdd3c7">RadarIQ_init()</a> </td></tr>
+    <tr><td class="paramname">autoStart</td><td>The auto-start flag - 0 to disable, 1 to enable</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca7c4adf366b8f5ffdcb6f4510f9bfe234" title="Function excecuted ok.">RADARIQ_RETURN_VAL_OK</a> on success, <a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca1ebce77dd4e98421948b219aae1021e2" title="Function returned an error.">RADARIQ_RETURN_VAL_ERR</a> if no valid response was received </dd></dl>
 
 </div>
 </div>

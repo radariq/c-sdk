@@ -56,6 +56,7 @@ var _radar_i_q_8h =
       [ "RADARIQ_CMD_IWR_VERSION", "_radar_i_q_8h.html#a15802590784cc0821ff3b5fa3ade4793a3fce5df8ef9795160eb2a8c03a1dba61", null ],
       [ "RADARIQ_CMD_SCENE_CALIB", "_radar_i_q_8h.html#a15802590784cc0821ff3b5fa3ade4793a87e4a8b07bdc9e477ced83aca4723b81", null ],
       [ "RADARIQ_CMD_OBJECT_SIZE", "_radar_i_q_8h.html#a15802590784cc0821ff3b5fa3ade4793a85b0fdd3614e80f38920b8a63d1e0ee8", null ],
+      [ "RADARIQ_CMD_AUTO_START", "_radar_i_q_8h.html#a15802590784cc0821ff3b5fa3ade4793ae2f42cd731b461b03713f52b125ea2c9", null ],
       [ "RADARIQ_CMD_CAPTURE_START", "_radar_i_q_8h.html#a15802590784cc0821ff3b5fa3ade4793aee357c7c9766c7469a6c7e5863b455eb", null ],
       [ "RADARIQ_CMD_CAPTURE_STOP", "_radar_i_q_8h.html#a15802590784cc0821ff3b5fa3ade4793a503d6e789c65efe0d42da79175ca3532", null ],
       [ "RADARIQ_CMD_PNT_CLOUD_FRAME", "_radar_i_q_8h.html#a15802590784cc0821ff3b5fa3ade4793aa46aa641d1d92663a4e222957b7ad37f", null ],
@@ -105,6 +106,7 @@ var _radar_i_q_8h =
       [ "RADARIQ_RETURN_VAL_ERR", "_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deeca1ebce77dd4e98421948b219aae1021e2", null ]
     ] ],
     [ "RadarIQ_getAngleFilter", "_radar_i_q_8h.html#a7834f253c39273b7cf480b4977d7b268", null ],
+    [ "RadarIQ_getAutoStart", "_radar_i_q_8h.html#adcebf5ec01747867c891be7cad0e019c", null ],
     [ "RadarIQ_getChipTemperatures", "_radar_i_q_8h.html#a649b02831e5299d81638c8d097493c39", null ],
     [ "RadarIQ_getData", "_radar_i_q_8h.html#a2cb326471b57bd2fcb94912d41f05b6e", null ],
     [ "RadarIQ_getDataBuffer", "_radar_i_q_8h.html#ae0a5bececd801afa311f55f540ab8944", null ],
@@ -129,6 +131,7 @@ var _radar_i_q_8h =
     [ "RadarIQ_save", "_radar_i_q_8h.html#a44ca5ca6af1c13422a50701d9560a1d9", null ],
     [ "RadarIQ_sceneCalibrate", "_radar_i_q_8h.html#a711e097d0ebb91ef719df739e0fb7be1", null ],
     [ "RadarIQ_setAngleFilter", "_radar_i_q_8h.html#a0be80a0cb6db1b3c00949acad52579e8", null ],
+    [ "RadarIQ_setAutoStart", "_radar_i_q_8h.html#a6c4546438b480f7632b07ceac6f5c1df", null ],
     [ "RadarIQ_setDistanceFilter", "_radar_i_q_8h.html#ae6a3dce061efc7ea3853e06600dd3ca7", null ],
     [ "RadarIQ_setFrameRate", "_radar_i_q_8h.html#a26f0267bb2f298a2910f0270afd56caa", null ],
     [ "RadarIQ_setHeightFilter", "_radar_i_q_8h.html#aea7162246566c92438bde8ee64682421", null ],
