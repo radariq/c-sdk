@@ -376,6 +376,7 @@ bool RadarIQ_isPowerGood(const RadarIQHandle_t obj);
 
 /* UART commands */
 void RadarIQ_start(const RadarIQHandle_t obj, const uint8_t numFrames);
+void RadarIQ_stop(const RadarIQHandle_t obj);
 RadarIQReturnVal_t RadarIQ_reset(const RadarIQHandle_t obj, const RadarIQResetCode_t code);
 RadarIQReturnVal_t RadarIQ_save(const RadarIQHandle_t obj);
 RadarIQReturnVal_t RadarIQ_getVersion(const RadarIQHandle_t obj, RadarIQVersion_t * const firmware, RadarIQVersion_t * const hardware);

@@ -140,5 +140,6 @@ var _radar_i_q_8h =
     [ "RadarIQ_setObjectSize", "_radar_i_q_8h.html#afcb5cdbf33337762a369f95da70242ef", null ],
     [ "RadarIQ_setPointDensity", "_radar_i_q_8h.html#a80156c2b520065f627b423789ae68ce1", null ],
     [ "RadarIQ_setSensitivity", "_radar_i_q_8h.html#aedb94d80076af241d4f5e9fc950bd756", null ],
-    [ "RadarIQ_start", "_radar_i_q_8h.html#a8e5ee76f9e012f65ccb51c261e50c3f2", null ]
+    [ "RadarIQ_start", "_radar_i_q_8h.html#a8e5ee76f9e012f65ccb51c261e50c3f2", null ],
+    [ "RadarIQ_stop", "_radar_i_q_8h.html#ae50840d7855e8f34fc6ea2c0d45c753d", null ]
 ];

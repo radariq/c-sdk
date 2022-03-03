@@ -42,6 +42,7 @@ var NAVTREEINDEX0 =
 "_radar_i_q_8c.html#adcebf5ec01747867c891be7cad0e019c":[3,0,0,0,11],
 "_radar_i_q_8c.html#ae0a5bececd801afa311f55f540ab8944":[3,0,0,0,14],
 "_radar_i_q_8c.html#ae3a96007c0ccce64bb45a0d62854daab":[3,0,0,0,31],
+"_radar_i_q_8c.html#ae50840d7855e8f34fc6ea2c0d45c753d":[3,0,0,0,47],
 "_radar_i_q_8c.html#ae6a3dce061efc7ea3853e06600dd3ca7":[3,0,0,0,38],
 "_radar_i_q_8c.html#aea7162246566c92438bde8ee64682421":[3,0,0,0,40],
 "_radar_i_q_8c.html#aedb94d80076af241d4f5e9fc950bd756":[3,0,0,0,45],
@@ -156,6 +157,7 @@ var NAVTREEINDEX0 =
 "_radar_i_q_8h.html#adcebf5ec01747867c891be7cad0e019c":[3,0,0,1,42],
 "_radar_i_q_8h.html#ae0a5bececd801afa311f55f540ab8944":[3,0,0,1,45],
 "_radar_i_q_8h.html#ae3a96007c0ccce64bb45a0d62854daab":[3,0,0,1,61],
+"_radar_i_q_8h.html#ae50840d7855e8f34fc6ea2c0d45c753d":[3,0,0,1,77],
 "_radar_i_q_8h.html#ae6a3dce061efc7ea3853e06600dd3ca7":[3,0,0,1,68],
 "_radar_i_q_8h.html#aea7162246566c92438bde8ee64682421":[3,0,0,1,70],
 "_radar_i_q_8h.html#aec427306d3faa22244147dd32a3b81ca":[3,0,0,1,34],
@@ -247,7 +249,5 @@ var NAVTREEINDEX0 =
 "struct_radar_i_q_msg__t.html":[2,0,7],
 "struct_radar_i_q_msg__t.html#a4541221fe8a2a748d3c57721b63defaf":[2,0,7,2],
 "struct_radar_i_q_msg__t.html#a9a1be960f2423133e0b8dcaabb5fdb59":[2,0,7,1],
-"struct_radar_i_q_msg__t.html#ab88d28bc4f058f055123c3df73a79769":[2,0,7,0],
-"struct_radar_i_q_pointcloud_stats__t.html":[2,0,8],
-"struct_radar_i_q_pointcloud_stats__t.html#a44534cb4ebee04e2def06753a25bc6cc":[2,0,8,1]
+"struct_radar_i_q_msg__t.html#ab88d28bc4f058f055123c3df73a79769":[2,0,7,0]
 };

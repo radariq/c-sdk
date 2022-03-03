@@ -385,6 +385,24 @@ void RadarIQ_start(const RadarIQHandle_t obj, const uint8_t numFrames)
 }
 
 /**
+ * Sends a ::RADARIQ_CMD_CAPTURE_STOP packet to the device to stop radar data capture.
+ *
+ * @param obj The RadarIQ object handle returned from RadarIQ_init()
+ */
+void RadarIQ_stop(const RadarIQHandle_t obj)
+{
+    RADARIQ_ASSERT(NULL != obj);
+
+    obj->txPacket.data[0] = RADARIQ_CMD_CAPTURE_STOP;
+    obj->txPacket.data[1] = RADARIQ_CMD_VAR_REQUEST;
+    obj->txPacket.len = 2u;
+
+    RadarIQ_sendPacket(obj);
+}
+
+
+
+/**
  * Sends a ::RADARIQ_CMD_RESET packet to the device to reset the device.
  *
  * @param obj The RadarIQ object handle returned from RadarIQ_init()

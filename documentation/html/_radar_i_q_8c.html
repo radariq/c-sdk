@@ -159,6 +159,8 @@ Functions</h2></td></tr>
 <tr class="separator:ae0a5bececd801afa311f55f540ab8944"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e5ee76f9e012f65ccb51c261e50c3f2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8c.html#a8e5ee76f9e012f65ccb51c261e50c3f2">RadarIQ_start</a> (const <a class="el" href="_radar_i_q_8h.html#aed45e60c5eebea06431bbceab1356a62">RadarIQHandle_t</a> obj, const uint8_t numFrames)</td></tr>
 <tr class="separator:a8e5ee76f9e012f65ccb51c261e50c3f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae50840d7855e8f34fc6ea2c0d45c753d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8c.html#ae50840d7855e8f34fc6ea2c0d45c753d">RadarIQ_stop</a> (const <a class="el" href="_radar_i_q_8h.html#aed45e60c5eebea06431bbceab1356a62">RadarIQHandle_t</a> obj)</td></tr>
+<tr class="separator:ae50840d7855e8f34fc6ea2c0d45c753d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0676e777bf54bc9f7f05274c32ec92e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deec">RadarIQReturnVal_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8c.html#af0676e777bf54bc9f7f05274c32ec92e">RadarIQ_reset</a> (const <a class="el" href="_radar_i_q_8h.html#aed45e60c5eebea06431bbceab1356a62">RadarIQHandle_t</a> obj, const <a class="el" href="_radar_i_q_8h.html#a31d8f9e0ea6cb6800d2b65b67fd37a7d">RadarIQResetCode_t</a> code)</td></tr>
 <tr class="separator:af0676e777bf54bc9f7f05274c32ec92e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a44ca5ca6af1c13422a50701d9560a1d9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_radar_i_q_8h.html#a5e3cd35b1affded336e4f08cb1c3deec">RadarIQReturnVal_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_radar_i_q_8c.html#a44ca5ca6af1c13422a50701d9560a1d9">RadarIQ_save</a> (const <a class="el" href="_radar_i_q_8h.html#aed45e60c5eebea06431bbceab1356a62">RadarIQHandle_t</a> obj)</td></tr>
@@ -1726,6 +1728,31 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">obj</td><td>The RadarIQ object handle returned from <a class="el" href="_radar_i_q_8c.html#a889302d8de02fc27890045fa32bdd3c7">RadarIQ_init()</a> </td></tr>
     <tr><td class="paramname">numFrames</td><td>The number of frames (1-255) to capture, or 0 for continuous capture </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ae50840d7855e8f34fc6ea2c0d45c753d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae50840d7855e8f34fc6ea2c0d45c753d">&#9670;&nbsp;</a></span>RadarIQ_stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RadarIQ_stop </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="_radar_i_q_8h.html#aed45e60c5eebea06431bbceab1356a62">RadarIQHandle_t</a>&#160;</td>
+          <td class="paramname"><em>obj</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sends a <a class="el" href="_radar_i_q_8h.html#a15802590784cc0821ff3b5fa3ade4793a503d6e789c65efe0d42da79175ca3532" title="Stops a radar data capture.">RADARIQ_CMD_CAPTURE_STOP</a> packet to the device to stop radar data capture.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">obj</td><td>The RadarIQ object handle returned from <a class="el" href="_radar_i_q_8c.html#a889302d8de02fc27890045fa32bdd3c7">RadarIQ_init()</a> </td></tr>
   </table>
   </dd>
 </dl>
